@@ -23,6 +23,12 @@ config IOSCHED_TEST
 	  according to the test case and declare PASS/FAIL according to the
 	  requests completion error code.
 
+config IOSCHED_FIFO
+	bool
+	default y
+	---help---
+	 A no-op scheduler that really does nothing.
+
 config IOSCHED_DEADLINE
 	tristate "Deadline I/O scheduler"
 	default y
