@@ -11,7 +11,7 @@ obj-$(CONFIG_CPU_FREQ_GOV_YANKDEMAND)		+= cpufreq_yankdemand.o
 obj-$(CONFIG_CPU_FREQ_GOV_YANKACTIVE)		+= cpufreq_yankactive.o
 obj-$(CONFIG_CPU_FREQ_GOV_USERSPACE)		+= cpufreq_userspace.o
 obj-$(CONFIG_CPU_FREQ_GOV_SMARTMAX)		+= cpufreq_smartmax.o
-obj-$(CONFIG_CPU_FREQ_GOV_SavagedZen) 		+= cpufreq_savagedzen.o
+obj-$(CONFIG_CPU_FREQ_GOV_SAVAGEDZEN) 		+= cpufreq_savagedzen.o
 obj-$(CONFIG_CPU_FREQ_GOV_POWERSAVE)		+= cpufreq_powersave.o
 obj-$(CONFIG_CPU_FREQ_GOV_PERFORMANCE)		+= cpufreq_performance.o
 obj-$(CONFIG_CPU_FREQ_GOV_ONDEMAND)		+= cpufreq_ondemand.o
@@ -30,7 +30,6 @@ obj-$(CONFIG_CPU_FREQ_GOV_ARTERACTIVE)		+= cpufreq_arteractive.o
 obj-$(CONFIG_CPU_FREQ_GOV_ALUCARD)		+= cpufreq_alucard.o
 obj-$(CONFIG_CPU_FREQ_GOV_ABYSSPLUGV2)		+= cpufreq_abyssplugv2.o
 obj-$(CONFIG_CPU_FREQ_GOV_ABYSSPLUG)		+= cpufreq_abyssplug.o
-
 
 
 # CPUfreq cross-arch helpers
