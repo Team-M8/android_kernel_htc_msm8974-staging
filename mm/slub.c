@@ -2115,7 +2115,7 @@ EXPORT_SYMBOL(kmem_cache_free);
 
 
 static int slub_min_order;
-static int slub_max_order = PAGE_ALLOC_COSTLY_ORDER;
+static int slub_max_order;
 static int slub_min_objects;
 
 static int slub_nomerge;
