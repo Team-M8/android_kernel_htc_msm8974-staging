@@ -1166,6 +1166,12 @@ unsigned int cpufreq_quick_get(unsigned int cpu)
 }
 EXPORT_SYMBOL(cpufreq_quick_get);
 
+/**
+ * cpufreq_quick_get_max - get the max reported CPU frequency for this CPU
+ * @cpu: CPU number
+ *
+ * Just return the max possible frequency for a given CPU.
+ */
 unsigned int cpufreq_quick_get_max(unsigned int cpu)
 {
 	struct cpufreq_policy *policy = cpufreq_cpu_get(cpu);
