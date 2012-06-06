@@ -259,7 +259,14 @@ EXPORT_SYMBOL_GPL(tracing_on);
 void tracing_off(void)
 {
 	if (global_trace.buffer)
-		ring_buffer_record_on(global_trace.buffer);
+		ring_buffer_record_off(global_trace.buffer);
+	/*
+	 * This flag is only looked at when buffers haven't been
+	 * allocated yet. We don't really care about the race
+	 * between setting this flag and actually turning
+	 * on the buffer.
+	 */
+>>>>>>> 3993b24... tracing: Have tracing_off() actually turn tracing off
 	global_trace.buffer_disabled = 1;
 }
 EXPORT_SYMBOL_GPL(tracing_off);
