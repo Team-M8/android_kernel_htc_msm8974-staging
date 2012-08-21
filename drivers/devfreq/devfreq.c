@@ -196,7 +196,7 @@ static void devfreq_monitor(struct work_struct *work)
 
 void devfreq_monitor_start(struct devfreq *devfreq)
 {
-	INIT_DELAYED_WORK_DEFERRABLE(&devfreq->work, devfreq_monitor);
+	INIT_DEFERRABLE_WORK(&devfreq->work, devfreq_monitor);
 	if (devfreq->profile->polling_ms)
 		queue_delayed_work(devfreq_wq, &devfreq->work,
 			msecs_to_jiffies(devfreq->profile->polling_ms));
@@ -858,23 +858,6 @@ static struct device_attribute devfreq_attrs[] = {
 	__ATTR(trans_stat, S_IRUGO, show_trans_table, NULL),
 	{ },
 };
-
-/**
- * devfreq_start_polling() - Initialize data structure for devfreq framework and
- *			   start polling registered devfreq devices.
- */
-static int __init devfreq_start_polling(void)
-{
-	mutex_lock(&devfreq_list_lock);
-	polling = false;
-	devfreq_wq = create_freezable_workqueue("devfreq_wq");
-	INIT_DEFERRABLE_WORK(&devfreq_work, devfreq_monitor);
-	mutex_unlock(&devfreq_list_lock);
-
-	devfreq_monitor(&devfreq_work.work);
-	return 0;
-}
-late_initcall(devfreq_start_polling);
 
 static int __init devfreq_init(void)
 {
