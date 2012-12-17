@@ -1875,7 +1875,7 @@ static int ext4_ext_rm_idx(handle_t *handle, struct inode *inode,
 	int err;
 	ext4_fsblk_t leaf;
 
-	
+	/* free index block */
 	depth--;
 	path = path + depth;
 	leaf = ext4_idx_pblock(path->p_idx);
@@ -2332,6 +2332,9 @@ cont:
 		} else {
 			
 			if (path[i].p_hdr->eh_entries == 0 && i > 0) {
+				/* index is empty, remove it;
+				 * handle must be already prepared by the
+				 * truncatei_leaf() */
 				err = ext4_ext_rm_idx(handle, inode, path, i);
 			}
 			
