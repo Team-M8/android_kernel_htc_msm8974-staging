@@ -1080,12 +1080,12 @@ pci_omegapci_setup(struct serial_private *priv,
 static int
 pci_brcm_trumanage_setup(struct serial_private *priv,
 			 const struct pciserial_board *board,
-			 struct uart_port *port, int idx)
+			 struct uart_8250_port *port, int idx)
 {
 	int ret = pci_default_setup(priv, board, port, idx);
 
-	port->type = PORT_BRCM_TRUMANAGE;
-	port->flags = (port->flags | UPF_FIXED_PORT | UPF_FIXED_TYPE);
+	port->port.type = PORT_BRCM_TRUMANAGE;
+	port->port.flags = (port->port.flags | UPF_FIXED_PORT | UPF_FIXED_TYPE);
 	return ret;
 }
 
@@ -1164,7 +1164,6 @@ pci_xr17c154_setup(struct serial_private *priv,
 #define PCI_DEVICE_ID_PLX_CRONYX_OMEGA	0xc001
 #define PCI_DEVICE_ID_INTEL_PATSBURG_KT 0x1d3d
 #define PCI_DEVICE_ID_BROADCOM_TRUMANAGE 0x160a
-#define PCI_DEVICE_ID_INTEL_QRK_UART	0x0936
 
 /* Unknown vendors/cards - this should not be in linux/pci_ids.h */
 #define PCI_SUBDEVICE_ID_UNKNOWN_0x1584	0x1584
