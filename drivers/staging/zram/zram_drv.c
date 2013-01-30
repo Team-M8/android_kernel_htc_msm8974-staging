@@ -299,8 +299,14 @@ static void zram_free_page(struct zram *zram, size_t index)
 
 	zs_free(meta->mem_pool, handle);
 
-	if (size <= PAGE_SIZE / 2)
-		atomic_dec(&zram->stats.good_compress);
+	if (is_partial_io(bvec)) {
+		/* Use  a temporary buffer to decompress the page */
+		uncmem = kmalloc(PAGE_SIZE, GFP_NOIO);
+		if (!uncmem) {
+			pr_info("Error allocating temp memory!\n");
+			return -ENOMEM;
+		}
+	}
 
 	atomic64_sub(meta->table[index].size, &zram->stats.compr_size);
 	atomic_dec(&zram->stats.pages_stored);
@@ -416,6 +422,10 @@ static int zram_bvec_write(struct zram *zram, struct bio_vec *bvec, u32 index,
 		goto out;
 	}
 	if (is_partial_io(bvec)) {
+		/*
+		 * This is a partial IO. We need to read the full page
+		 * before to write the changes.
+		 */
 		uncmem = kmalloc(PAGE_SIZE, GFP_NOIO);
 		if (!uncmem) {
 			ret = -ENOMEM;
