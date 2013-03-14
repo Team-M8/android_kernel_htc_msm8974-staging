@@ -635,7 +635,11 @@ struct sk_buff *sk_stream_alloc_skb(struct sock *sk, int size, gfp_t gfp)
 	if (skb) {
 		if (sk_wmem_schedule(sk, skb->truesize)) {
 			skb_reserve(skb, sk->sk_prot->max_header);
-			skb->avail_size = size;
+			/*
+			 * Make sure that we have exactly size bytes
+			 * available to the caller, no more, no less.
+			 */
+			skb->reserved_tailroom = skb->end - skb->tail - size;
 			return skb;
 		}
 		__kfree_skb(skb);
