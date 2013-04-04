@@ -834,6 +834,9 @@ restart_loop:
 				commit_transaction;
 	}
 	spin_unlock(&journal->j_list_lock);
+	/* Drop all spin_locks because commit_callback may be block.
+	 * __journal_remove_checkpoint() can not destroy transaction
+	 * under us because it is not marked as T_FINISHED yet */
 	if (journal->j_commit_callback)
 		journal->j_commit_callback(journal, commit_transaction);
 
@@ -844,7 +847,7 @@ restart_loop:
 	write_lock(&journal->j_state_lock);
 	spin_lock(&journal->j_list_lock);
 	commit_transaction->t_state = T_FINISHED;
-	
+	/* Recheck checkpoint lists after j_list_lock was dropped */
 	if (commit_transaction->t_checkpoint_list == NULL &&
 	    commit_transaction->t_checkpoint_io_list == NULL) {
 		__jbd2_journal_drop_transaction(journal, commit_transaction);
