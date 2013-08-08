@@ -442,7 +442,10 @@ static void percpu_timer_stop(void)
 
 static DEFINE_RAW_SPINLOCK(stop_lock);
 
-DEFINE_PER_CPU(struct pt_regs, regs_before_stop);
+static struct pt_regs __percpu regs_before_stop;
+/*
+ * ipi_cpu_stop - handle IPI from smp_send_stop()
+ */
 static void ipi_cpu_stop(unsigned int cpu, struct pt_regs *regs)
 {
 	if (system_state == SYSTEM_BOOTING ||
