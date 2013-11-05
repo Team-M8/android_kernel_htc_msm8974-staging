@@ -317,7 +317,7 @@ define_one_global_rw(hotplug_rq_3_1);
 define_one_global_rw(hotplug_rq_4_0);
 #endif
 
-static void __cpuinit cpus_hotplugging(bool state) {
+static void cpus_hotplugging(bool state) {
 	unsigned int cpu=0;
 	int delay = 0;
 
@@ -544,7 +544,7 @@ static struct attribute_group alucard_hotplug_attr_group = {
 	.name = "alucard_hotplug",
 };
 
-static void __cpuinit hotplug_work_fn(struct work_struct *work)
+static void hotplug_work_fn(struct work_struct *work)
 {
 	bool hotplug_enable = atomic_read(&hotplug_tuners_ins.hotplug_enable) > 0;
 	int upmaxcoreslimit = atomic_read(&hotplug_tuners_ins.maxcoreslimit);
