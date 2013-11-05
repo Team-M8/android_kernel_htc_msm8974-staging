@@ -141,7 +141,7 @@ DispatchWrapper(CommOSWork *work)
 #ifdef CONFIG_HOTPLUG_CPU
 
 
-static int __cpuinit
+static int
 CpuCallback(struct notifier_block *nfb,
 	    unsigned long action,
 	    void *hcpu)
