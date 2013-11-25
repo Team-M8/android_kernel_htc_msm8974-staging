@@ -649,7 +649,8 @@ int adreno_perfcounter_query_group(struct adreno_device *adreno_dev,
 }
 
 static inline void refcount_group(struct adreno_perfcount_group *group,
-	unsigned int reg, unsigned int flags, unsigned int *lo)
+	unsigned int reg, unsigned int flags,
+	unsigned int *lo, unsigned int *hi)
 {
 	if (flags & PERFCOUNTER_FLAG_KERNEL)
 		group->regs[reg].kernelcount++;
@@ -658,6 +659,9 @@ static inline void refcount_group(struct adreno_perfcount_group *group,
 
 	if (lo)
 		*lo = group->regs[reg].offset;
+
+	if (hi)
+		*hi = group->regs[reg].offset_hi;
 }
 
 /**
@@ -665,7 +669,8 @@ static inline void refcount_group(struct adreno_perfcount_group *group,
  * @adreno_dev: Adreno device to configure
  * @groupid: Desired performance counter group
  * @countable: Countable desired to be in a counter
- * @offset: Return offset of the countable
+ * @offset: Return offset of the LO counter assigned
+ * @offset_hi: Return offset of the HI counter assigned
  * @flags: Used to setup kernel perf counters
  *
  * Try to place a countable in an available counter.  If the countable is
@@ -675,7 +680,7 @@ static inline void refcount_group(struct adreno_perfcount_group *group,
 
 int adreno_perfcounter_get(struct adreno_device *adreno_dev,
 	unsigned int groupid, unsigned int countable, unsigned int *offset,
-	unsigned int flags)
+	unsigned int *offset_hi, unsigned int flags)
 {
 	struct adreno_perfcounters *counters = adreno_dev->gpudev->perfcounters;
 	struct adreno_perfcount_group *group;
@@ -685,6 +690,8 @@ int adreno_perfcounter_get(struct adreno_device *adreno_dev,
 	/* always clear return variables */
 	if (offset)
 		*offset = 0;
+	if (offset_hi)
+		*offset_hi = 0;
 
 	if (NULL == counters)
 		return -EINVAL;
@@ -706,7 +713,8 @@ int adreno_perfcounter_get(struct adreno_device *adreno_dev,
 		/* If it is already reserved, just increase the refcounts */
 		if ((group->regs[countable].kernelcount != 0) ||
 			(group->regs[countable].usercount != 0)) {
-				refcount_group(group, countable, flags, offset);
+				refcount_group(group, countable, flags,
+					offset, offset_hi);
 				return 0;
 		}
 
@@ -722,7 +730,8 @@ int adreno_perfcounter_get(struct adreno_device *adreno_dev,
 
 		for (i = 0; i < group->reg_count; i++) {
 			if (group->regs[i].countable == countable) {
-				refcount_group(group, i, flags, offset);
+				refcount_group(group, i, flags,
+					offset, offset_hi);
 				return 0;
 			} else if (group->regs[i].countable ==
 			KGSL_PERFCOUNTER_NOT_USED) {
@@ -755,6 +764,8 @@ int adreno_perfcounter_get(struct adreno_device *adreno_dev,
 
 	if (offset)
 		*offset = group->regs[empty].offset;
+	if (offset_hi)
+		*offset_hi = group->regs[empty].offset_hi;
 
 	return ret;
 }
