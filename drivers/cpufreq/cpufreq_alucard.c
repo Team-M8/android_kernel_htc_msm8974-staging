@@ -94,6 +94,8 @@ static struct alucard_tuners {
 #endif
 	.pump_inc_step = ATOMIC_INIT(1),
 	.pump_dec_step = ATOMIC_INIT(2),
+	.pump_inc_step = ATOMIC_INIT(2),
+	.pump_dec_step = ATOMIC_INIT(1),
 };
 
 /************************** sysfs interface ************************/
@@ -403,7 +405,7 @@ static void alucard_check_cpu(struct cpufreq_alucard_cpuinfo *this_alucard_cpuin
 			(cur_idle_time - this_alucard_cpuinfo->prev_cpu_idle);
 	this_alucard_cpuinfo->prev_cpu_idle = cur_idle_time;
 
-	if (!cpu_policy)
+	if (!cpu_policy || cpu_policy == NULL)
 		return;
 
 	/*printk(KERN_ERR "TIMER CPU[%u], wall[%u], idle[%u]\n",cpu, wall_time, idle_time);*/
