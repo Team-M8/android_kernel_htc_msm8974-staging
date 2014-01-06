@@ -289,8 +289,6 @@ union snd_codec_options {
 	struct snd_dec_flac flac_dec;
 };
 
-<<<<<<< HEAD
-=======
 /** struct snd_codec_desc - description of codec capabilities
  * @max_ch: Maximum number of audio channels
  * @sample_rates: Sampling rates in Hz, use values like 48000 for this
@@ -312,7 +310,6 @@ union snd_codec_options {
  * configurations.
  *
  */
->>>>>>> 2745769... ALSA: compress: change the way sample rates are sent to kernel
 
 struct snd_codec_desc {
 	__u32 max_ch;
@@ -327,6 +324,33 @@ struct snd_codec_desc {
 	__u32 reserved[15];
 };
 
+<<<<<<< HEAD
+=======
+/** struct snd_codec
+ * @id: Identifies the supported audio encoder/decoder.
+ *		See SND_AUDIOCODEC macros.
+ * @ch_in: Number of input audio channels
+ * @ch_out: Number of output channels. In case of contradiction between
+ *		this field and the channelMode field, the channelMode field
+ *		overrides.
+ * @sample_rate: Audio sample rate of input data in Hz, use values like 48000
+ *             for this.
+ * @bit_rate: Bitrate of encoded data. May be ignored by decoders
+ * @rate_control: Encoding rate control. See SND_RATECONTROLMODE defines.
+ *               Encoders may rely on profiles for quality levels.
+ *		 May be ignored by decoders.
+ * @profile: Mandatory for encoders, can be mandatory for specific
+ *		decoders as well. See SND_AUDIOPROFILE defines.
+ * @level: Supported level (Only used by WMA at the moment)
+ * @ch_mode: Channel mode for encoder. See SND_AUDIOCHANMODE defines
+ * @format: Format of encoded bistream. Mandatory when defined.
+ *		See SND_AUDIOSTREAMFORMAT defines.
+ * @align: Block alignment in bytes of an audio sample.
+ *		Only required for PCM or IEC formats.
+ * @options: encoder-specific settings
+ * @reserved: reserved for future use
+ */
+>>>>>>> cadac7e... ALSA: compress: update comment for sample rate in snd_codec
 
 struct snd_codec {
 	__u32 id;
