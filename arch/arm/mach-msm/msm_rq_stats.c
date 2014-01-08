@@ -387,7 +387,7 @@ static int __init msm_rq_stats_init(void)
 	struct cpufreq_policy cpu_policy;
 
 #ifndef CONFIG_SMP
-	
+	/* Bail out if this is not an SMP Target */
 	rq_info.init = 0;
 	return -ENOSYS;
 #endif
@@ -430,7 +430,7 @@ late_initcall(msm_rq_stats_init);
 static int __init msm_rq_stats_early_init(void)
 {
 #ifndef CONFIG_SMP
-	
+	/* Bail out if this is not an SMP Target */
 	rq_info.init = 0;
 	return -ENOSYS;
 #endif
