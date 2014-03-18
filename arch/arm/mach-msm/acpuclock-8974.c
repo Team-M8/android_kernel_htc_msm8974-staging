@@ -2413,7 +2413,11 @@ static struct acpuclk_krait_params acpuclk_8974_params __initdata = {
 	.bus_scale = &bus_scale_data,
 	.pte_efuse_phys = 0xFC4B80B0,
 	.get_bin_info = get_krait_bin_format_b,
+#ifdef CONFIG_LOW_CPUCLOCKS
+	.stby_khz = 268800,
+#else
 	.stby_khz = 300000,
+#endif
 };
 
 #define cpu_is_msm8974pro() (cpu_is_msm8974pro_aa() || cpu_is_msm8974pro_ab() \
