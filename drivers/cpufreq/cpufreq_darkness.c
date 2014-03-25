@@ -95,26 +95,39 @@ static struct darkness_tuners {
 #endif
 };
 
-#ifdef CONFIG_CPU_EXYNOS4210
-static int freqs_step[16][4]={
-    {1600000,1500000,1500000,1500000},
-    {1500000,1400000,1300000,1300000},
-    {1400000,1300000,1200000,1200000},
-    {1300000,1200000,1000000,1000000},
-    {1200000,1100000, 800000, 800000},
-    {1100000,1000000, 600000, 500000},
-    {1000000, 800000, 500000, 200000},
-    { 900000, 600000, 400000, 100000},
-    { 800000, 500000, 200000, 100000},
-    { 700000, 400000, 100000, 100000},
-    { 600000, 200000, 100000, 100000},
-    { 500000, 100000, 100000, 100000},
-    { 400000, 100000, 100000, 100000},
-    { 300000, 100000, 100000, 100000},
-    { 200000, 100000, 100000, 100000},
-	{ 100000, 100000, 100000, 100000}
-};
-#endif
+static inline u64 get_cpu_idle_time_jiffy(unsigned int cpu, u64 *wall)
+{
+	u64 idle_time;
+	u64 cur_wall_time;
+	u64 busy_time;
+
+	cur_wall_time = jiffies64_to_cputime64(get_jiffies_64());
+
+	busy_time = kcpustat_cpu(cpu).cpustat[CPUTIME_USER];
+	busy_time += kcpustat_cpu(cpu).cpustat[CPUTIME_SYSTEM];
+	busy_time += kcpustat_cpu(cpu).cpustat[CPUTIME_IRQ];
+	busy_time += kcpustat_cpu(cpu).cpustat[CPUTIME_SOFTIRQ];
+	busy_time += kcpustat_cpu(cpu).cpustat[CPUTIME_STEAL];
+	busy_time += kcpustat_cpu(cpu).cpustat[CPUTIME_NICE];
+
+	idle_time = cur_wall_time - busy_time;
+	if (wall)
+		*wall = jiffies_to_usecs(cur_wall_time);
+
+	return jiffies_to_usecs(idle_time);
+}
+
+static inline cputime64_t get_cpu_idle_time(unsigned int cpu, cputime64_t *wall, int io_busy)
+{
+	u64 idle_time = get_cpu_idle_time_us(cpu, io_busy ? wall : NULL);
+
+	if (idle_time == -1ULL)
+		return get_cpu_idle_time_jiffy(cpu, wall);
+	else if (!io_busy)
+		idle_time += get_cpu_iowait_time_us(cpu, wall);
+
+	return idle_time;
+}
 
 /************************** sysfs interface ************************/
 
@@ -399,8 +412,7 @@ static void darkness_check_cpu(struct cpufreq_darkness_cpuinfo *this_darkness_cp
 	cpu = this_darkness_cpuinfo->cpu;
 	cpu_policy = this_darkness_cpuinfo->cur_policy;	
 
-	cur_idle_time = get_cpu_idle_time_us(cpu, NULL);
-	cur_idle_time += get_cpu_iowait_time_us(cpu, &cur_wall_time);
+	cur_idle_time = get_cpu_idle_time(cpu, &cur_wall_time, 0);
 
 	wall_time = (unsigned int)
 			(cur_wall_time - this_darkness_cpuinfo->prev_cpu_wall);
@@ -514,8 +526,7 @@ static int cpufreq_governor_darkness(struct cpufreq_policy *policy,
 
 		this_darkness_cpuinfo->cur_policy = policy;
 
-		this_darkness_cpuinfo->prev_cpu_idle = get_cpu_idle_time_us(cpu, NULL);
-		this_darkness_cpuinfo->prev_cpu_idle += get_cpu_iowait_time_us(cpu, &this_darkness_cpuinfo->prev_cpu_wall);
+		this_darkness_cpuinfo->prev_cpu_idle = get_cpu_idle_time(cpu, &this_darkness_cpuinfo->prev_cpu_wall, 0);
 
 		this_darkness_cpuinfo->freq_table = cpufreq_frequency_get_table(cpu);
 		this_darkness_cpuinfo->cpu = cpu;
