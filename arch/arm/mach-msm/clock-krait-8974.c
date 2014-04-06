@@ -36,6 +36,10 @@
 #include <linux/debugfs.h>
 #endif
 
+int pvs_number = 0;
+module_param(pvs_number, int, 0755); 
+
+
 DEFINE_FIXED_DIV_CLK(hfpll_src_clk, 1, NULL);
 DEFINE_FIXED_DIV_CLK(acpu_aux_clk, 2, NULL);
 
@@ -478,6 +482,7 @@ static void get_krait_bin_format_b(struct platform_device *pdev,
 	
 	pte_efuse = readl_relaxed(base + 0x4) & BIT(21);
 	if (pte_efuse) {
+		pvs_number = *pvs;
 		dev_info(&pdev->dev, "PVS bin: %d\n", *pvs);
 	} else {
 		dev_warn(&pdev->dev, "PVS bin not set. Defaulting to 0!\n");
