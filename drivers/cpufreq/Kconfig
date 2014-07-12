@@ -93,6 +93,17 @@ config CPU_FREQ_DEFAULT_GOV_SMARTMAX
 	select CPU_FREQ_GOV_SMARTMAX
 	help
 	  Use the CPUFreq governor 'smartmax' as default
+config CPU_FREQ_DEFAULT_GOV_YANKDEMAND
+	bool "yankdemand"
+	select CPU_FREQ_GOV_YANKDEMAND
+	select CPU_FREQ_GOV_PERFORMANCE
+	help
+	  Use the CPUFreq governor 'yankdemand' as default. This allows
+	  you to get a full dynamic frequency capable system by simply
+	  loading your cpufreq low-level hardware driver.
+	  Be aware that not all cpufreq drivers support the yankdemand
+	  governor. If unsure have a look at the help section of the
+	  driver. Fallback governor will be the performance governor.
 
 config CPU_FREQ_DEFAULT_GOV_CONSERVATIVE
 	bool "conservative"
@@ -230,6 +241,15 @@ config CPU_FREQ_GOV_ONDEMAND_2_PHASE
 	help
 	  '2-phase' - Enable this to have only 1 simple table when increasing
 	  frequency according to CPU loading.
+
+config CPU_FREQ_GOV_YANKDEMAND
+	tristate "'yankdemand' cpufreq policy governor"
+	select CPU_FREQ_TABLE
+	help
+	  'yankdemand' - This driver adds a dynamic cpufreq policy governor.
+	  The governor is based on ondemand with just different default settings
+	  and can be achieved using ondemand with a script. This is added for
+	  simplification purposes for myself.
 
 config CPU_FREQ_GOV_INTERACTIVE
 	tristate "'interactive' cpufreq policy governor"
