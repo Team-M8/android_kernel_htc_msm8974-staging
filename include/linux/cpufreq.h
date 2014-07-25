@@ -32,7 +32,7 @@
 int cpufreq_register_notifier(struct notifier_block *nb, unsigned int list);
 int cpufreq_unregister_notifier(struct notifier_block *nb, unsigned int list);
 extern void disable_cpufreq(void);
-#else		
+#else
 static inline int cpufreq_register_notifier(struct notifier_block *nb,
 						unsigned int list)
 {
@@ -44,7 +44,7 @@ static inline int cpufreq_unregister_notifier(struct notifier_block *nb,
 	return 0;
 }
 static inline void disable_cpufreq(void) { }
-#endif		
+#endif
 
 
 #define CPUFREQ_POLICY_POWERSAVE	(1)
@@ -60,31 +60,31 @@ struct cpufreq_cpuinfo {
 	unsigned int		max_freq;
 	unsigned int		min_freq;
 
-	
+
 	unsigned int		transition_latency;
 };
 
 struct cpufreq_real_policy {
-	unsigned int		min;    
-	unsigned int		max;    
-	unsigned int		policy; 
-	struct cpufreq_governor	*governor; 
+	unsigned int		min;
+	unsigned int		max;
+	unsigned int		policy;
+	struct cpufreq_governor	*governor;
 };
 
 struct cpufreq_policy {
-	cpumask_var_t		cpus;	
-	cpumask_var_t		related_cpus; 
-	unsigned int		shared_type; 
-	unsigned int		cpu;    
+	cpumask_var_t		cpus;
+	cpumask_var_t		related_cpus;
+	unsigned int		shared_type;
+	unsigned int		cpu;
 	struct cpufreq_cpuinfo	cpuinfo;
 
-	unsigned int		min;    
-	unsigned int		max;    
-	unsigned int		cur;    
-	unsigned int		policy; 
-	struct cpufreq_governor	*governor; 
+	unsigned int		min;
+	unsigned int		max;
+	unsigned int		cur;
+	unsigned int		policy;
+	struct cpufreq_governor	*governor;
 
-	struct work_struct	update; 
+	struct work_struct	update;
 
 	struct cpufreq_real_policy	user_policy;
 
@@ -97,10 +97,10 @@ struct cpufreq_policy {
 #define CPUFREQ_NOTIFY		(2)
 #define CPUFREQ_START		(3)
 
-#define CPUFREQ_SHARED_TYPE_NONE (0) 
-#define CPUFREQ_SHARED_TYPE_HW	 (1) 
-#define CPUFREQ_SHARED_TYPE_ALL	 (2) 
-#define CPUFREQ_SHARED_TYPE_ANY	 (3) 
+#define CPUFREQ_SHARED_TYPE_NONE (0)
+#define CPUFREQ_SHARED_TYPE_HW	 (1)
+#define CPUFREQ_SHARED_TYPE_ALL	 (2)
+#define CPUFREQ_SHARED_TYPE_ANY	 (3)
 
 
 #define CPUFREQ_PRECHANGE	(0)
@@ -109,10 +109,10 @@ struct cpufreq_policy {
 #define CPUFREQ_SUSPENDCHANGE	(9)
 
 struct cpufreq_freqs {
-	unsigned int cpu;	
+	unsigned int cpu;
 	unsigned int old;
 	unsigned int new;
-	u8 flags;		
+	u8 flags;
 };
 
 
@@ -169,8 +169,8 @@ int lock_policy_rwsem_write(int cpu);
 void unlock_policy_rwsem_write(int cpu);
 
 
-#define CPUFREQ_RELATION_L 0  
-#define CPUFREQ_RELATION_H 1  
+#define CPUFREQ_RELATION_L 0
+#define CPUFREQ_RELATION_H 1
 
 struct freq_attr;
 
@@ -179,20 +179,20 @@ struct cpufreq_driver {
 	char			name[CPUFREQ_NAME_LEN];
 	u8			flags;
 
-	
+
 	int	(*init)		(struct cpufreq_policy *policy);
 	int	(*verify)	(struct cpufreq_policy *policy);
 
-	
+
 	int	(*setpolicy)	(struct cpufreq_policy *policy);
 	int	(*target)	(struct cpufreq_policy *policy,
 				 unsigned int target_freq,
 				 unsigned int relation);
 
-	
+
 	unsigned int	(*get)	(unsigned int cpu);
 
-	
+
 	unsigned int (*getavg)	(struct cpufreq_policy *policy,
 				 unsigned int cpu);
 	int	(*bios_limit)	(int cpu, unsigned int *limit);
@@ -204,9 +204,9 @@ struct cpufreq_driver {
 };
 
 
-#define CPUFREQ_STICKY		0x01	
-#define CPUFREQ_CONST_LOOPS	0x02	
-#define CPUFREQ_PM_NO_WARN	0x04	
+#define CPUFREQ_STICKY		0x01
+#define CPUFREQ_CONST_LOOPS	0x02
+#define CPUFREQ_PM_NO_WARN	0x04
 
 int cpufreq_register_driver(struct cpufreq_driver *driver_data);
 int cpufreq_unregister_driver(struct cpufreq_driver *driver_data);
@@ -313,6 +313,9 @@ extern struct cpufreq_governor cpufreq_gov_conservative;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE)
 extern struct cpufreq_governor cpufreq_gov_interactive;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_interactive)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SMARTMAX)
+extern struct cpufreq_governor cpufreq_gov_smartmax;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_smartmax)
 #endif
 
 
@@ -321,8 +324,8 @@ extern struct cpufreq_governor cpufreq_gov_interactive;
 #define CPUFREQ_TABLE_END     ~1
 
 struct cpufreq_frequency_table {
-	unsigned int	index;     
-	unsigned int	frequency; 
+	unsigned int	index;
+	unsigned int	frequency;
 };
 
 int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
@@ -349,4 +352,4 @@ void cpufreq_frequency_table_get_attr(struct cpufreq_frequency_table *table,
 void cpufreq_frequency_table_put_attr(unsigned int cpu);
 
 
-#endif 
+#endif
