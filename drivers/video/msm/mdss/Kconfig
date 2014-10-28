@@ -89,3 +89,8 @@ config MHL_MONITOR_WORKAROUND
 config MDSS_DUMP_MDP_UNDERRUN
 	boolean 'Dump reg when MDP underrun'
 	default n:
+
+config LCD_KCAL
+	depends on FB_MSM_MDSS
+	bool "Color control driver for MSM-MDSS devices"
+	default n

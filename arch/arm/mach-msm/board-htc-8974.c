@@ -32,6 +32,7 @@
 #include <asm/mach/arch.h>
 #include <mach/board.h>
 #include <mach/gpiomux.h>
+#include <mach/msm_kcal.h>
 #include <linux/gpio.h>
 #include <mach/msm_iomap.h>
 #ifdef CONFIG_ION_MSM
@@ -701,6 +702,7 @@ void __init htc_8974_add_drivers(void)
 #ifdef CONFIG_HTC_POWER_DEBUG
 	htc_cpu_usage_register();
 #endif
+	msm_kcal_ctrl_init();
 }
 
 static struct of_dev_auxdata htc_8974_auxdata_lookup[] __initdata = {
