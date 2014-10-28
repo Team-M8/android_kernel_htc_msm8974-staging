@@ -29,6 +29,7 @@ static struct kcal_lut_data lut = {
 	.g = 255,
 	.b = 255,
 	.min = 35,
+	.invert = 0
 };
 
 static int kcal_set_values(int kcal_r, int kcal_g, int kcal_b)
@@ -68,6 +69,23 @@ static int kcal_set_min(int kcal_min)
 static int kcal_get_min(int *kcal_min)
 {
 	*kcal_min = lut.min;
+
+	return 0;
+}
+
+static int kcal_set_invert(int kcal_inv)
+{
+	lut.invert = kcal_inv;
+
+	mdss_dsi_panel_invert(lut.invert);
+
+	return 0;
+}
+
+static int kcal_get_invert(int *kcal_inv)
+{
+	*kcal_inv = lut.invert;
+
 	return 0;
 }
 
@@ -81,7 +99,9 @@ static struct kcal_platform_data kcal_pdata = {
 	.get_values = kcal_get_values,
 	.refresh_display = kcal_refresh_values,
 	.set_min = kcal_set_min,
-	.get_min = kcal_get_min
+	.get_min = kcal_get_min,
+	.set_invert = kcal_set_invert,
+	.get_invert = kcal_get_invert
 };
 
 static ssize_t kcal_store(struct device *dev, struct device_attribute *attr,
@@ -148,11 +168,41 @@ static ssize_t kcal_min_show(struct device *dev, struct device_attribute *attr,
 	int kcal_min = 0;
 
 	kcal_pdata.get_min(&kcal_min);
+
 	return sprintf(buf, "%d\n", kcal_min);
+}
+
+static ssize_t kcal_invert_store(struct device *dev,
+		struct device_attribute *attr,	const char *buf, size_t count)
+{
+	int kcal_inv = 0;
+
+	if (!count)
+		return -EINVAL;
+
+	sscanf(buf, "%d", &kcal_inv);
+
+	if (kcal_inv < 0 || kcal_inv > 1)
+		return -EINVAL;
+
+	kcal_pdata.set_invert(kcal_inv);
+
+	return count;
+}
+
+static ssize_t kcal_invert_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	int kcal_inv = 0;
+
+	kcal_pdata.get_invert(&kcal_inv);
+
+	return sprintf(buf, "%d\n", kcal_inv);
 }
 
 static DEVICE_ATTR(kcal, 0644, kcal_show, kcal_store);
 static DEVICE_ATTR(kcal_min, 0644, kcal_min_show, kcal_min_store);
+static DEVICE_ATTR(kcal_invert, 0644, kcal_invert_show, kcal_invert_store);
 
 static struct platform_device kcal_ctrl_device = {
 	.name = "kcal_ctrl",
@@ -173,6 +223,9 @@ static int kcal_ctrl_probe(struct platform_device *pdev)
 	if (rc)
 		return -1;
 	rc = device_create_file(&pdev->dev, &dev_attr_kcal_min);
+	if (rc)
+		return -1;
+	rc = device_create_file(&pdev->dev, &dev_attr_kcal_invert);
 	if (rc)
 		return -1;
 
