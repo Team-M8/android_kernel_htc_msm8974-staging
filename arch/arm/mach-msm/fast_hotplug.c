@@ -23,7 +23,7 @@
 #include <linux/cpufreq.h>
 #include <linux/module.h>
 
-#define FAST_HOTPLUG_ENABLED	1
+#define FAST_HOTPLUG_ENABLED	0
 
 // #define DEBUG_ENABLED		1
 #define HOTPLUG_INFO_TAG	"[HOTPLUG] : "
@@ -68,6 +68,9 @@ static struct __cpuinit kernel_param_ops __cpuinitdata params_ops_enable = {
 module_param_cb(fast_hotplug_enabled, &params_ops_enable, &fast_hotplug_enabled, 0644);
 
 static DEFINE_MUTEX(mutex);
+
+static unsigned int refresh_rate = REFRESH_RATE;
+module_param(refresh_rate, uint, 0644);
 
 static struct workqueue_struct *hotplug_wq;
 static struct delayed_work hotplug_work;
@@ -306,7 +309,7 @@ delay_work:
 	if(is_sleeping)
 		return;
 	mutex_lock(&mutex);
-	queue_delayed_work_on(0, hotplug_wq, &hotplug_work, msecs_to_jiffies(REFRESH_RATE));
+	queue_delayed_work_on(0, hotplug_wq, &hotplug_work, msecs_to_jiffies(refresh_rate));
 	mutex_unlock(&mutex);
 }
 
@@ -424,7 +427,7 @@ static int __init hotplug_init(void)
 
 //	register_power_suspend(&hotplug_power_suspend_handler);
 
-	queue_delayed_work_on(0, hotplug_wq, &hotplug_work, msecs_to_jiffies(REFRESH_RATE));
+	queue_delayed_work_on(0, hotplug_wq, &hotplug_work, msecs_to_jiffies(refresh_rate));
 
 	pr_info(HOTPLUG_INFO_TAG"Fast hotplug succesfully initialized !");
 	return 0;
