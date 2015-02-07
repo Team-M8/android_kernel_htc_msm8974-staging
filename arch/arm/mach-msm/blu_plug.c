@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2013 Stratos Karafotis <stratosk@semaphore.gr> (dyn_hotplug for mako)
  *
- * Copyright (C) 2014 engstk <eng.stk@sapo.pt> (hammerhead port, fixes and changes to blu_plug) 
+ * Copyright (C) 2015 engstk <eng.stk@sapo.pt> (hammerhead port, fixes and changes to blu_plug) 
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -40,7 +40,6 @@
 #define MAX_FREQ_PLUG (2265600)
 #define MAX_CORES_PLUG (4)
 
-
 static unsigned int up_threshold = UP_THRESHOLD;;
 static unsigned int delay = DELAY;
 static unsigned int min_online = MIN_ONLINE;
@@ -61,22 +60,17 @@ static struct workqueue_struct *dyn_workq;
 static struct work_struct suspend, resume, touchy;
 static struct notifier_block notify;
 
-
 /*
  * Bring online each possible CPU up to max_online threshold if lim is true or
  * up to num_possible_cpus if lim is false
  */
-static inline void up_all(bool lim)
+static inline void up_all(void)
 {
 	unsigned int cpu;
 
-	unsigned int max = (lim ? max_online : num_possible_cpus());
-
 	for_each_possible_cpu(cpu)
-		if (cpu_is_offline(cpu) && num_online_cpus() < max)
+		if (cpu_is_offline(cpu) && num_online_cpus() < max_online)
 			cpu_up(cpu);
-
-	down_timer = 0;
 }
 
 /* Put offline each possible CPU down to min_online threshold */
@@ -226,7 +220,7 @@ static __ref void max_screenoff(bool screenoff)
 			max_online = max_cores_plug;
 		}
 		
-		up_all(true);
+		up_all();
 		
 		for_each_possible_cpu(cpu) {
 			msm_cpufreq_set_freq_limits(cpu, MSM_CPUFREQ_NO_LIMIT, freq);
@@ -387,7 +381,7 @@ static __ref int set_min_online(const char *val, const struct kernel_param *kp)
 	ret = param_set_uint(val, kp);
 	
 	if (ret == 0) {
-			up_all(true);
+			up_all();
 	}
 	
 	return ret;
@@ -416,7 +410,7 @@ static __ref int set_max_online(const char *val, const struct kernel_param *kp)
 	
 	if (ret == 0) {
 		down_all();
-		up_all(true);
+		up_all();
 	}
 	
 	return ret;
@@ -438,7 +432,7 @@ static __ref int set_max_cores_screenoff(const char *val, const struct kernel_pa
 	ret = kstrtouint(val, 10, &i);
 	if (ret)
 		return -EINVAL;
-	if (i < 1 || i > num_possible_cpus())
+	if (i < 1 || i < min_online || i > max_online || i > num_possible_cpus())
 		return -EINVAL;
 	if (i > max_online)
 		max_cores_screenoff = max_online;
@@ -447,7 +441,7 @@ static __ref int set_max_cores_screenoff(const char *val, const struct kernel_pa
 	
 	if (ret == 0) {
 		down_all();
-		up_all(true);
+		up_all();
 	}
 	
 	return ret;
