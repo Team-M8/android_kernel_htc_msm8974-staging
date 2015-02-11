@@ -1652,7 +1652,7 @@
 	qcom,chipid = <0x03030002>;
 	qcom,msm-bus,num-cases = <15>;
 	qcom,bus-control;
-	qcom,initial-pwrlevel = <6>;
+	qcom,initial-pwrlevel = <7>;
 
 	/* Updated bus bandwidth requirements */
 	qcom,msm-bus,vectors-KBps =
@@ -1748,6 +1748,13 @@
                        qcom,bus-freq = <0>;
                        qcom,io-fraction = <101>;
                 };
+
+                qcom,gpu-pwrlevel@8 {
+			reg = <8>;
+			qcom,gpu-freq = <27000000>;
+			qcom,bus-freq = <0>;
+			qcom,io-fraction = <101>;
+		};
        };
 };
 
