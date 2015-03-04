@@ -234,18 +234,18 @@ static __ref void max_screenoff(bool screenoff)
 }
 
 /* On suspend put offline all cores except cpu0*/
-static __ref void dyn_lcd_suspend(struct work_struct *work)
+static void dyn_lcd_suspend(struct work_struct *work)
 {	
 	max_screenoff(true);
 }
 
 /* On resume bring online CPUs until max_online to prevent lags */
-static __ref void dyn_lcd_resume(struct work_struct *work)
+static void dyn_lcd_resume(struct work_struct *work)
 {
 	max_screenoff(false);
 }
 
-static __ref int lcd_notifier_callback(struct notifier_block *this, unsigned long event, void *data)
+static int lcd_notifier_callback(struct notifier_block *this, unsigned long event, void *data)
 {
 	switch (event) {
 	case LCD_EVENT_ON_END:
@@ -377,7 +377,7 @@ static struct kernel_param_ops max_cores_screenoff_ops = {
 module_param_cb(max_cores_screenoff, &max_cores_screenoff_ops, &max_cores_screenoff, 0644);
 
 /* max_freq_screenoff */
-static __ref int set_max_freq_screenoff(const char *val, const struct kernel_param *kp)
+static int set_max_freq_screenoff(const char *val, const struct kernel_param *kp)
 {
 	int ret = MAX_FREQ_SCREENOFF;
 	unsigned int i;
@@ -476,6 +476,7 @@ static int __init dyn_hp_init(void)
 static void __exit dyn_hp_exit(void)
 {
 	cancel_delayed_work_sync(&dyn_work);
+	lcd_unregister_client(&notify);
 	destroy_workqueue(dyn_workq);
 	
 	pr_info("%s: deactivated\n", __func__);
