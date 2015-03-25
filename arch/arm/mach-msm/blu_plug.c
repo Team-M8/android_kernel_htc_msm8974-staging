@@ -1,9 +1,9 @@
 /*
- * Dynamic Hotplug for mako / hammerhead
+ * Dynamic Hotplug for mako / hammerhead / shamu
  *
  * Copyright (C) 2013 Stratos Karafotis <stratosk@semaphore.gr> (dyn_hotplug for mako)
  *
- * Copyright (C) 2015 engstk <eng.stk@sapo.pt> (hammerhead port, fixes and changes to blu_plug) 
+ * Copyright (C) 2015 engstk <eng.stk@sapo.pt> (hammerhead & shamu implementation, fixes and changes to blu_plug)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -22,11 +22,10 @@
 #include <linux/sched.h>
 #include <linux/timer.h>
 #include <linux/fb.h>
-#include <linux/cpufreq.h>
 #include <mach/cpufreq.h>
+#include <linux/cpufreq.h>
 #include <linux/delay.h>
 #include <linux/slab.h>
-#include <linux/input.h>
 
 #define INIT_DELAY		(60 * HZ) /* Initial delay to 60 sec, 4 cores while boot */
 #define DELAY			(HZ / 2)
@@ -38,7 +37,6 @@
 #define MAX_CORES_SCREENOFF (2)
 #define MAX_FREQ_SCREENOFF (1190400)
 #define MAX_FREQ_PLUG (2265600)
-#define MAX_CORES_PLUG (4)
 
 static unsigned int up_threshold = UP_THRESHOLD;;
 static unsigned int delay = DELAY;
@@ -51,18 +49,14 @@ static unsigned int up_timer_cnt = DEF_UP_TIMER_CNT;
 static unsigned int max_cores_screenoff = MAX_CORES_SCREENOFF;
 static unsigned int max_freq_screenoff = MAX_FREQ_SCREENOFF;
 static unsigned int max_freq_plug = MAX_FREQ_PLUG;
-static unsigned int max_cores_plug = MAX_CORES_PLUG;
-bool prevsaver = false;
 
 static struct delayed_work dyn_work;
 static struct workqueue_struct *dyn_workq;
 static struct work_struct suspend, resume;
 static struct notifier_block notify;
 
-/*
- * Bring online each possible CPU up to max_online threshold if lim is true or
- * up to num_possible_cpus if lim is false
- */
+
+/* Bring online each possible CPU up to max_online cores */
 static inline void up_all(void)
 {
 	unsigned int cpu;
@@ -70,7 +64,7 @@ static inline void up_all(void)
 	for_each_possible_cpu(cpu)
 		if (cpu_is_offline(cpu) && num_online_cpus() < max_online)
 			cpu_up(cpu);
-			
+
 	down_timer = 0;
 }
 
@@ -179,44 +173,20 @@ static __ref void max_screenoff(bool screenoff)
 	
 	if (screenoff) {
 		max_freq_plug = cpufreq_quick_get_max(0);
-		
+		freq = max_freq_screenoff;
+
 		cancel_delayed_work_sync(&dyn_work);
-		
-		if (max_freq_plug == 729600) {
-			freq = 729600;
-			max_online = 1;
-			prevsaver = true;
-		}
-		else {
-			freq = max_freq_screenoff;
-			
-			if (max_cores_plug > max_online && prevsaver) {
-				max_online = max_cores_plug;
-				prevsaver = false;
-			}
-			else
-				max_cores_plug = max_online;
-				
-			max_online = max_cores_screenoff;
-		}
 		
 		for_each_possible_cpu(cpu) {
 			msm_cpufreq_set_freq_limits(cpu, MSM_CPUFREQ_NO_LIMIT, freq);
 			
-			if (cpu && num_online_cpus() > max_online)
+			if (cpu && num_online_cpus() > max_cores_screenoff)
 				cpu_down(cpu);
 		}
 		cpufreq_update_policy(cpu);
 	}
 	else {
-		if (max_freq_plug == 729600) {
-			freq = 729600;
-			max_online = 2;
-		}
-		else {
-			freq = max_freq_plug;
-			max_online = max_cores_plug;
-		}
+		freq = max_freq_plug;
 		
 		up_all();
 		
@@ -244,7 +214,6 @@ static void dyn_lcd_resume(struct work_struct *work)
 {
 	max_screenoff(false);
 }
-
 
 static int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
 {
@@ -365,6 +334,8 @@ static __ref int set_max_cores_screenoff(const char *val, const struct kernel_pa
 		return -EINVAL;
 	if (i < 1 || i > max_online || i > num_possible_cpus())
 		return -EINVAL;
+	if (i > max_online)
+		max_cores_screenoff = max_online;
 
 	ret = param_set_uint(val, kp);
 	
@@ -491,9 +462,8 @@ static void __exit dyn_hp_exit(void)
 
 MODULE_AUTHOR("Stratos Karafotis <stratosk@semaphore.gr");
 MODULE_AUTHOR("engstk <eng.stk@sapo.pt>");
-MODULE_DESCRIPTION("'dyn_hotplug' - A dynamic hotplug driver for mako / hammerhead (blu_plug)");
+MODULE_DESCRIPTION("'dyn_hotplug' - A dynamic hotplug driver for mako / hammerhead / shamu (blu_plug)");
 MODULE_LICENSE("GPLv2");
 
 late_initcall(dyn_hp_init);
 module_exit(dyn_hp_exit);
-
