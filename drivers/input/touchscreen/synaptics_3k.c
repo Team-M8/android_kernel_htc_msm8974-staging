@@ -2014,7 +2014,8 @@ static ssize_t synaptics_sweep2sleep_dump(struct device *dev,
 static DEVICE_ATTR(sweep2sleep, 0666,
 	synaptics_sweep2sleep_show, synaptics_sweep2sleep_dump);
 
-static ssize_t synaptics_doubletap2wake_show(struct device *dev, struct device_attribute *attr, char *buf)
+static ssize_t synaptics_doubletap2wake_show(struct device *dev,
+                struct device_attribute *attr, char *buf)
 {
 	size_t count = 0;
 	if (dt2w_switch == dt2w_switch_temp )
@@ -2024,7 +2025,8 @@ static ssize_t synaptics_doubletap2wake_show(struct device *dev, struct device_a
 	return count;
 }
 
-static ssize_t synaptics_doubletap2wake_dump(struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
+static ssize_t synaptics_doubletap2wake_dump(struct device *dev,
+                struct device_attribute *attr, const char *buf, size_t count)
 {
 	if (buf[0] >= '0' && buf[0] <= '1' && buf[1] == '\n')
 		if (dt2w_switch != buf[0] - '0') {
@@ -2038,7 +2040,7 @@ static ssize_t synaptics_doubletap2wake_dump(struct device *dev, struct device_a
 	return count;
 }
 
-static DEVICE_ATTR(doubletap2wake, (S_IWUSR|S_IRUGO),
+static DEVICE_ATTR(doubletap2wake, 0666,
 	synaptics_doubletap2wake_show, synaptics_doubletap2wake_dump);
 
 static ssize_t synaptics_wake_gestures_show(struct device *dev,
