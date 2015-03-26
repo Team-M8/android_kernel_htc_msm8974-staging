@@ -380,7 +380,7 @@
 		qcom,vibrator@c000 {
 			/* M8 customized property for msm-pm8941.dtsi */
 			qcom,qpnp-vib-timeout-ms = <15000>;
-			qcom,qpnp-vib-vtg-level-mV = <3100>;
+			qcom,qpnp-vib-vtg-level-mV = <1400>;
 		};
 
 		qcom,leds@d800 {
