@@ -373,7 +373,7 @@ static u64 update_load(int cpu)
 	return now;
 }
 
-static void cpufreq_myths_plug_timer(unsigned long data)
+static void cpufreq_mythx_plug_timer(unsigned long data)
 {
 	u64 now;
 	unsigned int delta_time;
@@ -501,12 +501,7 @@ static void cpufreq_myths_plug_timer(unsigned long data)
 	wake_up_process(speedchange_task);
 
 rearm_if_notmax:
-	/*
-	 * Already set max speed and don't see a need to change that,
-	 * wait until next idle to re-evaluate, don't need timer.
-	 */
-	if (pcpu->target_freq == pcpu->policy->max)
-		goto exit;
+
 
 rearm:
 	if (!timer_pending(&pcpu->cpu_timer))
