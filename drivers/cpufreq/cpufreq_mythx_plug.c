@@ -2,6 +2,7 @@
  * drivers/cpufreq/cpufreq_interactive.c
  *
  * Copyright (C) 2010 Google, Inc.
+ * Copyright (C) 2015 stefant234
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -101,6 +102,10 @@ static unsigned long boostpulse_static_timer = BOOSTPULSE_TIMER;
 #define DEFAULT_TIMER_RATE (20 * USEC_PER_MSEC)
 static unsigned long timer_rate = DEFAULT_TIMER_RATE;
 
+/* Static time value to be used throughout this governor */
+#define DEFAULT_STATIC_TIMER (30 * USEC_PER_MSEC)
+static unsigned long static_timer = DEFAULT_STATIC_TIMER;
+
 /*
  * Wait this long before raising speed above hispeed, by default a single
  * timer interval.
@@ -134,7 +139,7 @@ static int timer_slack_val = DEFAULT_TIMER_SLACK;
  */
 static bool align_windows = true;
 
-#define TOP_STOCK_FREQ 2457600
+#define TOP_STOCK_FREQ 2035200
 
 
 /*
@@ -451,10 +456,10 @@ static void cpufreq_interactive_timer(unsigned long data)
 
 	/*
 	 * Do not scale below floor_freq unless we have been at or above the
-	 * floor frequency for the minimum sample time since last validated.
+	 * floor frequency for the pre set time since last validated.
 	 */
 	if (new_freq < pcpu->floor_freq) {
-		if (now - pcpu->floor_validate_time < min_sample_time) {
+		if (now - pcpu->floor_validate_time < static_timer) {
 			trace_cpufreq_interactive_notyet(
 				data, cpu_load, pcpu->target_freq,
 				pcpu->policy->cur, new_freq);
