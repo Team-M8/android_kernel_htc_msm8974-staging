@@ -1374,20 +1374,20 @@ static int __init cpufreq_interactive_init(void)
 	return cpufreq_register_governor(&cpufreq_gov_interactive);
 }
 
-#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_INTERACTIVE
-fs_initcall(cpufreq_interactive_init);
+#ifdef CONFIG_CPU_FREQ_DEFAULT_GOV_MYTHX_PLUG
+fs_initcall(cpufreq_mythx_plug_init);
 #else
-module_init(cpufreq_interactive_init);
+module_init(cpufreq_mythx_plug_init);
 #endif
 
-static void __exit cpufreq_interactive_exit(void)
+static void __exit cpufreq_mythx_plug_exit(void)
 {
-	cpufreq_unregister_governor(&cpufreq_gov_interactive);
+	cpufreq_unregister_governor(&cpufreq_gov_mythx_plug);
 	kthread_stop(speedchange_task);
 	put_task_struct(speedchange_task);
 }
 
-module_exit(cpufreq_interactive_exit);
+module_exit(cpufreq_mythx_plug_exit);
 
 MODULE_AUTHOR("Mike Chan <mike@android.com>");
 MODULE_DESCRIPTION("'cpufreq_interactive' - A cpufreq governor for "
