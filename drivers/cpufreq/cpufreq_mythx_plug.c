@@ -280,7 +280,7 @@ static unsigned int choose_freq(
 
 
 	do {
-		prevfreq = freq
+		prevfreq = freq;
 		tl = freq_to_targetload(freq);
 
 		/*
