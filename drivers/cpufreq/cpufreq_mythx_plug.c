@@ -95,7 +95,7 @@ static unsigned long min_sample_time = DEFAULT_MIN_SAMPLE_TIME;
 *define a static timer for the boostpulse. This is done to prevent it from taking a dynamic value from the min. sampletime
 */
 #define DEFAULT_BOOSTPULSE_STATIC_TIMER (20 * USEC_PER_MSEC)
-static unsigned long boostpulse_static_timer = BOOSTPULSE_TIMER; 
+static unsigned long boostpulse_static_timer = DEFAULT_BOOSTPULSE_TIMER; 
 
 /*
  * The sample rate of the timer used to increase frequency
