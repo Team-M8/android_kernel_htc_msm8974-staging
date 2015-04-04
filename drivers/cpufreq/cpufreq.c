@@ -367,6 +367,8 @@ show_one(scaling_min_freq_all_cpus, min);
 show_one(scaling_max_freq_all_cpus, max);
 show_one(scaling_cur_freq, cur);
 show_one(cpu_utilization, util);
+show_one(policy_min_freq, user_policy.min);
+show_one(policy_max_freq, user_policy.max);
 
 static int __cpufreq_set_policy(struct cpufreq_policy *data,
 				struct cpufreq_policy *policy);
@@ -729,6 +731,8 @@ cpufreq_freq_attr_rw(UV_mV_table);
 #ifdef CONFIG_CPU_VOLTAGE_TABLE
 define_one_global_rw(vdd_levels);
 #endif
+cpufreq_freq_attr_ro(policy_min_freq);
+cpufreq_freq_attr_ro(policy_max_freq);
 
 static struct attribute *default_attrs[] = {
 	&cpuinfo_min_freq.attr,
@@ -749,6 +753,8 @@ static struct attribute *default_attrs[] = {
 #ifdef CONFIG_MSM_CPU_VOLTAGE_CONTROL
 	&UV_mV_table.attr,
 #endif
+	&policy_min_freq.attr,
+	&policy_max_freq.attr,
 	NULL
 };
 
