@@ -296,11 +296,11 @@ static unsigned int choose_freq(
 
 		if (freq <= syncfreq) {
 		/* If that freq is less than or same as syncfreq, set syncfreq as freqmin */
-		freqmin = syncfreq;	
+		freqmin = syncfreq; }	
 	
 		if (freq >= syncfreq) {
 		/* Set syncfreq as maximal freq, if freq is more than syncfreq */
-		freqmax = syncfreq;
+		freqmax = syncfreq; }
 		
 	
 		
