@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  *
  * Author: Mike Chan (mike@android.com)
- * Adapted by: stefant234 (stefan@st-t.de)
+ * Author: stefant234 (stefan@st-t.de)
  *
  */
 
@@ -75,11 +75,11 @@ static struct mutex gov_lock;
 static unsigned int hispeed_freq;
 
 /* Go to hi speed when CPU load at or above this value. */
-#define DEFAULT_GO_HISPEED_LOAD 95
+#define DEFAULT_GO_HISPEED_LOAD 97
 static unsigned long go_hispeed_load = DEFAULT_GO_HISPEED_LOAD;
 
 /* Target load.  Lower values result in higher CPU speeds. */
-#define DEFAULT_TARGET_LOAD 80
+#define DEFAULT_TARGET_LOAD 85
 static unsigned int default_target_loads[] = {DEFAULT_TARGET_LOAD};
 static spinlock_t target_loads_lock;
 static unsigned int *target_loads = default_target_loads;
@@ -87,8 +87,9 @@ static int ntarget_loads = ARRAY_SIZE(default_target_loads);
 
 /*
  * The minimum amount of time to spend at a frequency before we can ramp down.
+ * Decreased to 50ms
  */
-#define DEFAULT_MIN_SAMPLE_TIME (80 * USEC_PER_MSEC)
+#define DEFAULT_MIN_SAMPLE_TIME (50 * USEC_PER_MSEC)
 static unsigned long min_sample_time = DEFAULT_MIN_SAMPLE_TIME;
 
 /*
@@ -141,7 +142,7 @@ static int timer_slack_val = DEFAULT_TIMER_SLACK;
 static bool align_windows = true;
 
 #define TOP_STOCK_FREQ 2035200
-#define SYNC_FREQ      1344000
+#define SYNC_FREQ      1497600
 
 
 /*
@@ -296,18 +297,14 @@ static unsigned int choose_freq(
 		if (freq <= syncfreq) {
 		/* If that freq is less than or same as syncfreq, set syncfreq as freqmin */
 		freqmin = syncfreq;	
+	
+		if (freq >= syncfreq) {
+		/* Set syncfreq as maximal freq, if freq is more than syncfreq */
+		freqmax = syncfreq;
 		
+	
 		
-
-		if 
-		
-		/* Find the highest frequency that is less than freqmax
-		
-		
-
-		
-
-			if (freq >= freqmax) {
+		if (freq >= freqmax) {
 				/*
 				 * Find the highest frequency that is less
 				 * than freqmax.
