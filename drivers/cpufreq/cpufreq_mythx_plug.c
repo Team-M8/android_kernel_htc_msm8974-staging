@@ -327,7 +327,7 @@ static unsigned int choose_freq(
 					break;
 				}
 			}
-		} else if (freq < prevfreq) {
+		 else if (freq < prevfreq) {
 			/* The previous frequency is high enough. */
 			freqmax = prevfreq;
 
