@@ -373,7 +373,7 @@ static u64 update_load(int cpu)
 	return now;
 }
 
-static void cpufreq_myths_plug_timer(unsigned long data)
+static void cpufreq_mythx_plug_timer(unsigned long data)
 {
 	u64 now;
 	unsigned int delta_time;
