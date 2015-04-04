@@ -21,7 +21,7 @@ TP_printk("cpu=%u targ=%lu actual=%lu",
 __entry->cpu_id, __entry->targfreq,
 __entry->actualfreq)
 );
-DEFINE_EVENT(set, cpufreq_myths_plug_setspeed,
+DEFINE_EVENT(set, cpufreq_mythx_plug_setspeed,
 TP_PROTO(u32 cpu_id, unsigned long targfreq,
 unsigned long actualfreq),
 TP_ARGS(cpu_id, targfreq, actualfreq)
@@ -55,7 +55,7 @@ unsigned long curtarg, unsigned long curactual,
 unsigned long newtarg),
 TP_ARGS(cpu_id, load, curtarg, curactual, newtarg)
 );
-DEFINE_EVENT(loadeval, cpufreq_myths_plug_already,
+DEFINE_EVENT(loadeval, cpufreq_mythx_plug_already,
 TP_PROTO(unsigned long cpu_id, unsigned long load,
 unsigned long curtarg, unsigned long curactual,
 unsigned long newtarg),
