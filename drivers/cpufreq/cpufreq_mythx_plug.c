@@ -141,7 +141,7 @@ static int timer_slack_val = DEFAULT_TIMER_SLACK;
 static bool align_windows = true;
 
 #define TOP_STOCK_FREQ 2035200
-#define syncfreq       1344000
+#define SYNC_FREQ      1344000
 
 
 /*
@@ -274,6 +274,7 @@ static unsigned int choose_freq(
 	int index;
 
 	freqmin = 0;
+	syncfreq = SYNC_FREQ;
 	freqmax = UINT_MAX;
 
 	do {
