@@ -277,24 +277,35 @@ static unsigned int choose_freq(
 	syncfreq = SYNC_FREQ;
 	freqmax = UINT_MAX;
 
+
 	do {
-		prevfreq = freq;
+		prevfreq = freq
 		tl = freq_to_targetload(freq);
 
 		/*
-		 * Find the lowest frequency where the computed load is less
-		 * than or equal to the target load.
-		 */
+		* So far, so good. Find the lowest frequency, where the load is lower or equal to target load
+		*/
 
 		if (cpufreq_frequency_table_target(
-			    pcpu->policy, pcpu->freq_table, loadadjfreq / tl,
-			    CPUFREQ_RELATION_L, &index))
-			break;
+				pcpu->policy, pcpu->freq_table, loadadjfreq / tl,
+				CPUFREQ_RELATION_L, &index))
+				break;
 		freq = pcpu->freq_table[index].frequency;
 
-		if (freq > syncfreq) {
-			/* The Sync frequency is too low and can't be used */
-			freqmin = syncfreq;
+
+		if (freq <= syncfreq) {
+		/* If that freq is less than or same as syncfreq, set syncfreq as freqmin */
+		freqmin = syncfreq;	
+		
+		
+
+		if 
+		
+		/* Find the highest frequency that is less than freqmax
+		
+		
+
+		
 
 			if (freq >= freqmax) {
 				/*
