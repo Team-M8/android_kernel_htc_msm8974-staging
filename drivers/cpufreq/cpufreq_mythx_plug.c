@@ -2,7 +2,7 @@
  * drivers/cpufreq/cpufreq_mythx_plug.c
  *
  * Copyright (C) 2010 Google, Inc.
- * Copyright (C) 2015 stefant234
+ * Copyright (C) 2015 stefant234, SimplTeam
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -141,6 +141,7 @@ static int timer_slack_val = DEFAULT_TIMER_SLACK;
 static bool align_windows = true;
 
 #define TOP_STOCK_FREQ 2035200
+#define syncfreq       1344000
 
 
 /*
@@ -269,6 +270,7 @@ static unsigned int choose_freq(
 	unsigned int freq = pcpu->policy->cur;
 	unsigned int prevfreq, freqmin, freqmax;
 	unsigned int tl;
+	unsigned int syncfreq;
 	int index;
 
 	freqmin = 0;
@@ -289,9 +291,9 @@ static unsigned int choose_freq(
 			break;
 		freq = pcpu->freq_table[index].frequency;
 
-		if (freq > prevfreq) {
-			/* The previous frequency is too low. */
-			freqmin = prevfreq;
+		if (freq > syncfreq) {
+			/* The Sync frequency is too low and can't be used */
+			freqmin = syncfreq;
 
 			if (freq >= freqmax) {
 				/*
