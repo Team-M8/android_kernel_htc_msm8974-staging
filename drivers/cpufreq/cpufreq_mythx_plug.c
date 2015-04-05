@@ -108,6 +108,10 @@ static unsigned long timer_rate = DEFAULT_TIMER_RATE;
 #define DEFAULT_STATIC_TIMER (30 * USEC_PER_MSEC)
 static unsigned long static_timer = DEFAULT_STATIC_TIMER;
 
+/* Timer for the Sync_FREQ. Used 20ms to not create too much stutter as we're basically adding this to the sampletime here */
+#define SYNCFREQ_TIMER (20 * USEC_PER_MSEC)
+static unsignesd long syncfreq_timer = SNCFREQ_TIMER;
+
 /*
  * Wait this long before raising speed above hispeed, by default a single
  * timer interval.
@@ -269,6 +273,7 @@ static unsigned int choose_freq(
 	struct cpufreq_mythx_plug_cpuinfo *pcpu, unsigned int loadadjfreq)
 {
 	unsigned int freq = pcpu->policy->cur;
+	unsigned int currentfreq = cur;
 	unsigned int prevfreq, freqmin, freqmax;
 	unsigned int tl;
 	unsigned int syncfreq;
@@ -276,6 +281,7 @@ static unsigned int choose_freq(
 
 	freqmin = 0;
 	syncfreq = SYNC_FREQ;
+	syncfreq_timer = SYNCFREQ_TIMER;
 	freqmax = UINT_MAX;
 
 
@@ -302,8 +308,14 @@ static unsigned int choose_freq(
 		/* Set syncfreq as maximal freq, if freq is more than syncfreq */
 		freqmax = syncfreq; 
 		
-	
-		
+		if (currentfreq == syncfreq) {
+		/* If the current frequency is the same as syncfreq, do an extra check if scaling up is really neccesary,	
+		* or if we can stay at currentfreq for more time */
+				cpufreq_frequency_table_target
+				pcpu->policy, pcpu->freq_table, loadadjfreq / tl,
+				CPUFREQ_RELATION_L, &index
+
+
 		if (freq >= freqmax) {
 				/*
 				 * Find the highest frequency that is less
@@ -421,6 +433,7 @@ static void cpufreq_mythx_plug_timer(unsigned long data)
 	cpu_load = loadadjfreq / pcpu->policy->cur;
 	boosted = boost_val || now < boostpulse_endtime;
 
+	/* Note to myself: There is work to be done here... */
 
 	if (cpu_load >= go_hispeed_load || boosted) {
 		if (pcpu->policy->cur < hispeed_freq) {
