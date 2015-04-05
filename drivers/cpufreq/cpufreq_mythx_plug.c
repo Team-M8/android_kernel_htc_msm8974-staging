@@ -110,7 +110,7 @@ static unsigned long static_timer = DEFAULT_STATIC_TIMER;
 
 /* Timer for the Sync_FREQ. Used 20ms to not create too much stutter as we're basically adding this to the sampletime here */
 #define SYNCFREQ_TIMER (20 * USEC_PER_MSEC)
-static unsignesd long syncfreq_timer = SNCFREQ_TIMER;
+static unsignesd long syncfreq_timer = SYNCFREQ_TIMER;
 
 /*
  * Wait this long before raising speed above hispeed, by default a single
