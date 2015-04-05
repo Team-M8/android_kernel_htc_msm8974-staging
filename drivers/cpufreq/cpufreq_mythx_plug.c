@@ -87,9 +87,9 @@ static int ntarget_loads = ARRAY_SIZE(default_target_loads);
 
 /*
  * The minimum amount of time to spend at a frequency before we can ramp down.
- * Decreased to 50ms
+ * Decreased to 60ms
  */
-#define DEFAULT_MIN_SAMPLE_TIME (50 * USEC_PER_MSEC)
+#define DEFAULT_MIN_SAMPLE_TIME (60 * USEC_PER_MSEC)
 static unsigned long min_sample_time = DEFAULT_MIN_SAMPLE_TIME;
 
 /*
@@ -142,7 +142,7 @@ static int timer_slack_val = DEFAULT_TIMER_SLACK;
 static bool align_windows = true;
 
 #define TOP_STOCK_FREQ 2035200
-#define SYNC_FREQ      1497600
+#define SYNC_FREQ      1190400
 
 
 /*
@@ -296,11 +296,11 @@ static unsigned int choose_freq(
 
 		if (freq <= syncfreq) {
 		/* If that freq is less than or same as syncfreq, set syncfreq as freqmin */
-		freqmin = syncfreq; }	
+		freqmin = syncfreq; 	
 	
 		if (freq >= syncfreq) {
 		/* Set syncfreq as maximal freq, if freq is more than syncfreq */
-		freqmax = syncfreq; }
+		freqmax = syncfreq; 
 		
 	
 		
@@ -327,6 +327,8 @@ static unsigned int choose_freq(
 					break;
 				}
 			}
+		}
+	}
 		 else if (freq < prevfreq) {
 			/* The previous frequency is high enough. */
 			freqmax = prevfreq;
