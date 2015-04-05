@@ -308,13 +308,13 @@ static unsigned int choose_freq(
 		/* Set syncfreq as maximal freq, if freq is more than syncfreq */
 		freqmax = syncfreq; 
 		
-		if (currentfreq == syncfreq) {
+		/*if (currentfreq == syncfreq) {
 		/* If the current frequency is the same as syncfreq, do an extra check if scaling up is really neccesary,	
-		* or if we can stay at currentfreq for more time */
-				cpufreq_frequency_table_target
-				pcpu->policy, pcpu->freq_table, loadadjfreq / tl,
-				CPUFREQ_RELATION_C, &index
-
+		* or if we can stay at currentfreq for more time 
+		*		cpufreq_frequency_table_target
+		*		pcpu->policy, pcpu->freq_table, loadadjfreq / tl,
+		*		CPUFREQ_RELATION_C, &index
+		*/
 
 		if (freq >= freqmax) {
 				/*
