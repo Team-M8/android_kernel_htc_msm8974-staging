@@ -110,7 +110,11 @@ static unsigned long static_timer = DEFAULT_STATIC_TIMER;
 
 /* Timer for the Sync_FREQ. Used 20ms to not create too much stutter as we're basically adding this to the sampletime here */
 #define SYNCFREQ_TIMER (20 * USEC_PER_MSEC)
-static unsignesd long syncfreq_timer = SYNCFREQ_TIMER;
+static unsigned long syncfreq_timer = SYNCFREQ_TIMER;
+
+/* The timer to wait 20ms upon loading the syncfreq later in this governor */
+#define SIMPL_TIMER (20 * USEC_PER_MSEC)
+static unsigned long simpl_timer = SIMPL_TIMER;
 
 /*
  * Wait this long before raising speed above hispeed, by default a single
@@ -272,17 +276,27 @@ static unsigned int freq_to_targetload(unsigned int freq)
 static unsigned int choose_freq(
 	struct cpufreq_mythx_plug_cpuinfo *pcpu, unsigned int loadadjfreq)
 {
+
+/* Define the timer for later use with the SyncFreq
+* This place is rather unusual to define anything, but I had a sudden PHP influenced idea... Forgive me.
+* The default state of syncstate is false. */
+static bool simpl_syncfreq = false;
+
+
 	unsigned int freq = pcpu->policy->cur;
-	unsigned int currentfreq = cur;
 	unsigned int prevfreq, freqmin, freqmax;
 	unsigned int tl;
 	unsigned int syncfreq;
+	unsigned int syncstate;
+	unsigned int simpl_timer;
 	int index;
 
 	freqmin = 0;
 	syncfreq = SYNC_FREQ;
 	syncfreq_timer = SYNCFREQ_TIMER;
 	freqmax = UINT_MAX;
+	syncstate = simpl_syncfreq;
+
 
 
 	do {
@@ -301,21 +315,26 @@ static unsigned int choose_freq(
 
 
 		if (freq <= syncfreq) {
-		/* If that freq is less than or same as syncfreq, set syncfreq as freqmin */
+		/* If that freq is less than or same as syncfreq, set syncfreq as freqmin, yes it cancels itself out.. WIP */
 		freqmin = syncfreq; 	
-	
+		/* Also set the syncstate to false, since it isn't matching the syncfreq */
+		syncstate = false;		
+
 		if (freq >= syncfreq) {
-		/* Set syncfreq as maximal freq, if freq is more than syncfreq */
+		/* Set syncfreq as maximal freq, if freq is more than syncfreq, which makes no real sense at the moment, WIP */
 		freqmax = syncfreq; 
+		/* Also set the syncstate to false, since it isn't matching the syncfreq */
+		syncstate = false;	
 		
-		while (counter = 
-		if (currentfreq == syncfreq) {
-		 If the current frequency is the same as syncfreq, do an extra check if scaling up is really neccesary,	
-		 or if we can stay at currentfreq for more time 
+	 
+		if (freq == syncfreq) {
+			syncstate = true;
+		 		if (syncstate == true) {
+				simpl_timer;
 				cpufreq_frequency_table_target
 				pcpu->policy, pcpu->freq_table, loadadjfreq / tl,
 				CPUFREQ_RELATION_C, &index
-		
+			}
 
 		if (freq >= freqmax) {
 				/*
@@ -328,7 +347,9 @@ static unsigned int choose_freq(
 					    &index))
 					break;
 				freq = pcpu->freq_table[index].frequency;
-
+				/* Also set the syncstate to false, since it isn't matching the syncfreq */
+				syncstate = false;	
+	
 				if (freq == freqmin) {
 					/*
 					 * The first frequency below freqmax
@@ -337,6 +358,8 @@ static unsigned int choose_freq(
 					 * we found that is fast enough.
 					 */
 					freq = freqmax;
+					/* Also set the syncstate to false, since it isn't matching the syncfreq */
+					syncstate = false;	
 					break;
 				}
 			}
