@@ -331,9 +331,7 @@ static bool simpl_syncfreq = false;
 			syncstate = true;
 		 		if (syncstate == true) {
 				simpl_timer;
-				cpufreq_frequency_table_target
-				pcpu->policy, pcpu->freq_table, loadadjfreq / tl,
-				CPUFREQ_RELATION_C, &index
+
 			}
 
 		if (freq >= freqmax) {
@@ -365,6 +363,7 @@ static bool simpl_syncfreq = false;
 			}
 		}
 	}
+}
 		 else if (freq < prevfreq) {
 			/* The previous frequency is high enough. */
 			freqmax = prevfreq;
