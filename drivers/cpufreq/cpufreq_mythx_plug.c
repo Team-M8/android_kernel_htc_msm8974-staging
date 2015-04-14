@@ -295,7 +295,7 @@ static bool simpl_syncfreq = false;
 	syncfreq = SYNC_FREQ;
 	syncfreq_timer = SYNCFREQ_TIMER;
 	freqmax = UINT_MAX;
-	syncstate = simpl_syncfreq;
+	syncstate = simpl_syncfreq; /* Note to myself: I don't like this way of getting it done. */
 
 
 
@@ -331,8 +331,9 @@ static bool simpl_syncfreq = false;
 			syncstate = true;
 		 		if (syncstate == true) {
 				simpl_timer;
+				}
 
-			}
+			
 
 		if (freq >= freqmax) {
 				/*
@@ -363,7 +364,8 @@ static bool simpl_syncfreq = false;
 			}
 		}
 	}
-}
+   }
+
 		 else if (freq < prevfreq) {
 			/* The previous frequency is high enough. */
 			freqmax = prevfreq;
