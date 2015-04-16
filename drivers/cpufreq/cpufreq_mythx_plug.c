@@ -719,6 +719,10 @@ static void cpufreq_mythx_plug_boost(void)
 	int i;
 	int anyboost = 0;
 	unsigned long flags[2];
+	unsigned int syncfreq;
+
+	syncfreq = SYNC_FREQ;
+
 	struct cpufreq_mythx_plug_cpuinfo *pcpu;
 
 	spin_lock_irqsave(&speedchange_cpumask_lock, flags[0]);
