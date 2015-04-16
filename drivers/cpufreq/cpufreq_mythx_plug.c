@@ -149,8 +149,10 @@ static int timer_slack_val = DEFAULT_TIMER_SLACK;
  */
 static bool align_windows = true;
 
-#define TOP_STOCK_FREQ 2035200
-#define SYNC_FREQ      1190400
+#define TOP_STOCK_FREQ	2035200
+#define SYNC_FREQ     	1190400
+#define HIGHFREQ	2649600			
+#define LOWFREQ		300000	
 
 
 /*
@@ -287,12 +289,16 @@ static bool simpl_syncfreq = false;
 	unsigned int prevfreq, freqmin, freqmax;
 	unsigned int tl;
 	unsigned int syncfreq;
+	unsigned int highfreq;
+	unsigned int lowfreq;
 	unsigned int syncstate;
 	unsigned int simpl_timer;
 	int index;
 
 	freqmin = 0;
 	syncfreq = SYNC_FREQ;
+	lowfreq = LOWFREQ;
+	highfreq = HIGHFREQ;
 	syncfreq_timer = SYNCFREQ_TIMER;
 	freqmax = UINT_MAX;
 	syncstate = simpl_syncfreq; /* Note to myself: I don't like this way of getting it done. */
@@ -733,7 +739,7 @@ static void cpufreq_mythx_plug_boost(void)
 		 * validated.
 		 */
 
-		pcpu->floor_freq = hispeed_freq;
+		pcpu->floor_freq = syncfreq;
 		pcpu->floor_validate_time = ktime_to_us(ktime_get());
 		spin_unlock_irqrestore(&pcpu->target_freq_lock, flags[1]);
 	}
