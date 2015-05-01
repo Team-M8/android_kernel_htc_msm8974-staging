@@ -26,6 +26,7 @@ obj-$(CONFIG_CPU_FREQ_GOV_BADASS)		+= cpufreq_badass.o
 obj-$(CONFIG_CPU_FREQ_GOV_ALUCARD)		+= cpufreq_alucard.o
 obj-$(CONFIG_CPU_FREQ_GOV_ABYSSPLUGV2)		+= cpufreq_abyssplugv2.o
 obj-$(CONFIG_CPU_FREQ_GOV_ABYSSPLUG)		+= cpufreq_abyssplug.o
+obj-$(CONFIG_CPU_FREQ_GOV_BARRY_ALLEN)		+= cpufreq_barry_allen.o
 
 
 
