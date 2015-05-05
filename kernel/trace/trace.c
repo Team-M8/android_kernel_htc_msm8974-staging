@@ -266,7 +266,6 @@ void tracing_off(void)
 	 * between setting this flag and actually turning
 	 * on the buffer.
 	 */
->>>>>>> 3993b24... tracing: Have tracing_off() actually turn tracing off
 	global_trace.buffer_disabled = 1;
 }
 EXPORT_SYMBOL_GPL(tracing_off);
