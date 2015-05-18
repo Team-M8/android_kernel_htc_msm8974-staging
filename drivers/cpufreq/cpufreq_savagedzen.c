@@ -35,6 +35,7 @@
 #include <linux/moduleparam.h>
 #include <asm/cputime.h>
 #include <linux/earlysuspend.h>
+#include <linux/module.h>
 
 static void (*pm_idle_old)(void);
 static atomic_t active_count = ATOMIC_INIT(0);
@@ -201,8 +202,8 @@ static void cpufreq_savagedzen_timer(unsigned long data)
         if (this_savagedzen->idle_exit_time == 0 || update_time == this_savagedzen->idle_exit_time)
                 return;
 
-        delta_idle = cputime64_sub(now_idle, this_savagedzen->time_in_idle);
-        delta_time = cputime64_sub(update_time, this_savagedzen->idle_exit_time);
+        delta_idle = now_idle - this_savagedzen->time_in_idle;
+        delta_time = update_time - this_savagedzen->idle_exit_time;
         //printk(KERN_INFO "savagedzenT: t=%llu i=%llu\n",cputime64_sub(update_time,this_savagedzen->idle_exit_time),delta_idle);
 
         // If timer ran less than 1ms after short-term sample started, retry.
@@ -230,7 +231,7 @@ static void cpufreq_savagedzen_timer(unsigned long data)
                 if (nr_running() < 1)
                         return;
 
-                if (cputime64_sub(update_time, this_savagedzen->freq_change_time) < up_rate_us)
+                if ((update_time - this_savagedzen->freq_change_time) < up_rate_us)
                         return;
 
 
@@ -257,7 +258,7 @@ static void cpufreq_savagedzen_timer(unsigned long data)
          * Do not scale down unless we have been at this frequency for the
          * minimum sample time.
          */
-        if (cputime64_sub(update_time, this_savagedzen->freq_change_time) < down_rate_us)
+        if ((update_time - this_savagedzen->freq_change_time) < down_rate_us)
                 return;
 
         cpumask_set_cpu(data, &work_cpumask);
