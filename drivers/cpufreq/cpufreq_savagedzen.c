@@ -632,56 +632,6 @@ static int cpufreq_governor_savagedzen(struct cpufreq_policy *new_policy,
         return 0;
 }
 
-static void savagedzen_suspend(int cpu, int suspend)
-{
-        struct savagedzen_info_s *this_savagedzen = &per_cpu(savagedzen_info, smp_processor_id());
-        struct cpufreq_policy *policy = this_savagedzen->cur_policy;
-        unsigned int new_freq;
-
-        if (!this_savagedzen->enable || sleep_max_freq==0) // disable behavior for sleep_max_freq==0
-                return;
-
-        savagedzen_update_min_max(this_savagedzen,policy,suspend);
-        if (suspend) {
-            if (policy->cur > this_savagedzen->max_speed) {
-                    new_freq = this_savagedzen->max_speed;
-
-                    if (debug_mask & SAVAGEDZEN_DEBUG_JUMPS)
-                            printk(KERN_INFO "savagedzenS: suspending at %d\n",new_freq);
-
-                    __cpufreq_driver_target(policy, new_freq,
-                                            CPUFREQ_RELATION_H);
-            }
-        } else { // resume at max speed:
-                new_freq = validate_freq(this_savagedzen,sleep_wakeup_freq);
-
-                if (debug_mask & SAVAGEDZEN_DEBUG_JUMPS)
-                        printk(KERN_INFO "savagedzenS: awaking at %d\n",new_freq);
-
-                __cpufreq_driver_target(policy, new_freq,
-                                        CPUFREQ_RELATION_L);
-        }
-}
-
-static void savagedzen_early_suspend(struct early_suspend *handler) {
-        int i;
-        suspended = 1;
-        for_each_online_cpu(i)
-                savagedzen_suspend(i,1);
-}
-
-static void savagedzen_late_resume(struct early_suspend *handler) {
-        int i;
-        suspended = 0;
-        for_each_online_cpu(i)
-                savagedzen_suspend(i,0);
-}
-
-static struct early_suspend savagedzen_power_suspend = {
-        .suspend = savagedzen_early_suspend,
-        .resume = savagedzen_late_resume,
-};
-
 static int __init cpufreq_savagedzen_init(void)
 {
         unsigned int i;
@@ -725,8 +675,6 @@ static int __init cpufreq_savagedzen_init(void)
         down_wq = create_workqueue("ksavagedzen_down");
 
         INIT_WORK(&freq_scale_work, cpufreq_savagedzen_freq_change_time_work);
-
-        register_early_suspend(&savagedzen_power_suspend);
 
         return cpufreq_register_governor(&cpufreq_gov_savagedzen);
 }
