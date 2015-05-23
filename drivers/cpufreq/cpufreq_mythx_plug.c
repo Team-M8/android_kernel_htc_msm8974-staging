@@ -2,7 +2,7 @@
  * drivers/cpufreq/cpufreq_mythx_plug.c
  *
  * Copyright (C) 2010 Google, Inc.
- * Copyright (C) 2015 stefant234, SimplTeam
+ 	     (C) 2015 stefant234, SimplTeam
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
