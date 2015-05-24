@@ -94,6 +94,7 @@ static unsigned long min_sample_time = DEFAULT_MIN_SAMPLE_TIME;
 
 /*
 *define a static timer for the boostpulse. This is done to prevent it from taking a dynamic value from the min. sampletime
+* Added by stefant234
 */
 #define DEFAULT_BOOSTPULSE_STATIC_TIMER (20 * USEC_PER_MSEC)
 static unsigned long boostpulse_static_timer = DEFAULT_BOOSTPULSE_STATIC_TIMER; 
@@ -105,14 +106,17 @@ static unsigned long boostpulse_static_timer = DEFAULT_BOOSTPULSE_STATIC_TIMER;
 static unsigned long timer_rate = DEFAULT_TIMER_RATE;
 
 /* Static time value to be used throughout this governor */
+/* Added by stefant234 */
 #define DEFAULT_STATIC_TIMER (30 * USEC_PER_MSEC)
 static unsigned long static_timer = DEFAULT_STATIC_TIMER;
 
 /* Timer for the Sync_FREQ. Used 20ms to not create too much stutter as we're basically adding this to the sampletime here */
+/* Added by stefant234 */
 #define SYNCFREQ_TIMER (20 * USEC_PER_MSEC)
 static unsigned long syncfreq_timer = SYNCFREQ_TIMER;
 
 /* The timer to wait 20ms upon loading the syncfreq later in this governor */
+/* Added by stefant234 */
 #define SIMPL_TIMER (20 * USEC_PER_MSEC)
 static unsigned long simpl_timer = SIMPL_TIMER;
 
@@ -130,6 +134,7 @@ static int nabove_hispeed_delay = ARRAY_SIZE(default_above_hispeed_delay);
 /* Non-zero means indefinite speed boost active */
 static int boost_val;
 /* Duration of a boot pulse in usecs */
+/* Added by stefant234 */
 static int boostpulse_duration_val = DEFAULT_BOOSTPULSE_STATIC_TIMER;
 /* End time of boost pulse in ktime converted to usecs */
 static u64 boostpulse_endtime;
@@ -150,7 +155,7 @@ static int timer_slack_val = DEFAULT_TIMER_SLACK;
 static bool align_windows = true;
 
 #define TOP_STOCK_FREQ	2035200
-#define SYNC_FREQ     	1190400
+#define SYNC_FREQ     	1190400 /* Added by stefant234 */
 #define HIGHFREQ	2649600			
 #define LOWFREQ		300000	
 
@@ -282,6 +287,7 @@ static unsigned int choose_freq(
 /* Define the timer for later use with the SyncFreq
 * This place is rather unusual to define anything, but I had a sudden PHP influenced idea... Forgive me.
 * The default state of syncstate is false. */
+/* Added by stefant234 */
 static bool simpl_syncfreq = false;
 
 
@@ -301,7 +307,9 @@ static bool simpl_syncfreq = false;
 	highfreq = HIGHFREQ;
 	syncfreq_timer = SYNCFREQ_TIMER;
 	freqmax = UINT_MAX;
-	syncstate = simpl_syncfreq; /* Note to myself: I don't like this way of getting it done. */
+	syncstate = simpl_syncfreq;
+	
+	/* Assign the variables / Added by stefant234 */
 
 
 
@@ -324,6 +332,7 @@ static bool simpl_syncfreq = false;
 		/* If that freq is less than or same as syncfreq, set syncfreq as freqmin, yes it cancels itself out.. WIP */
 		freqmin = syncfreq; 	
 		/* Also set the syncstate to false, since it isn't matching the syncfreq */
+		/* Added by stefant234 */
 		syncstate = false;		
 
 		if (freq >= syncfreq) {
