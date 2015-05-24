@@ -16,6 +16,9 @@
  *
  */
 
+
+/* modified for mythx_plug by stefant234 (2015) */
+
 #include <linux/cpu.h>
 #include <linux/cpumask.h>
 #include <linux/cpufreq.h>
