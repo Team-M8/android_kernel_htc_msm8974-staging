@@ -2,7 +2,6 @@
  * drivers/cpufreq/cpufreq_mythx_plug.c
  *
  * Copyright (C) 2010 Google, Inc.
- 	     (C) 2015 stefant234, SimplTeam
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -14,7 +13,6 @@
  * GNU General Public License for more details.
  *
  * Author: Mike Chan (mike@android.com)
- * Author: stefant234 (stefan@st-t.de)
  *
  */
 
@@ -1456,7 +1454,6 @@ static void __exit cpufreq_mythx_plug_exit(void)
 module_exit(cpufreq_mythx_plug_exit);
 
 MODULE_AUTHOR("Mike Chan <mike@android.com>");
-MODULE_AUTHOR("stefant234 <stefan@st-t.de>");
 MODULE_DESCRIPTION("'cpufreq_mythx_plug' - A cpufreq governor for "
 	"Latency sensitive workloads");
 MODULE_LICENSE("GPL");
