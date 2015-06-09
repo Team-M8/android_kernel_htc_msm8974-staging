@@ -26,14 +26,6 @@ struct kcal_platform_data {
 	int (*get_invert) (int *inv);
 };
 
-struct kcal_lut_data {
-	int r;
-	int g;
-	int b;
-	int min;
-	int invert;
-};
-
 int update_preset_lcdc_lut(int kr, int kg, int kb);
 
 int mdss_dsi_panel_invert(int enable);
