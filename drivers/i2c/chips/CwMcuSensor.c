@@ -119,7 +119,7 @@ struct wake_lock ges_wake_lock;
 struct wake_lock significant_wake_lock;
 
 static int power_key_pressed = 0;
-static int tap2wake = 0;
+static int tap2wake = 1;
 struct CWMCU_data {
 	struct i2c_client *client;
 	atomic_t delay;
