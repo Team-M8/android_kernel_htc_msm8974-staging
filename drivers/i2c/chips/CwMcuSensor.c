@@ -3448,8 +3448,8 @@ static int create_sysfs_interfaces(struct CWMCU_data *sensor)
 			NULL, 0, "%s", "proximity");
 	res = device_create_file(proximity_dev, &dev_attr_p_status);
 	if (res) {
-		E("%s, create proximty_device_create_file fail!\n", __func__);
-		goto err_create_proximty_device_file;
+		E("%s, create proximity_device_create_file fail!\n", __func__);
+		goto err_create_proximity_device_file;
 	}
 
 	sensor->sensor_class = class_create(THIS_MODULE, "htc_sensorhub");
@@ -3474,7 +3474,7 @@ custom_device_error:
 	class_destroy(sensor->sensor_class);
 custom_class_error:
 	device_remove_file(proximity_dev, &dev_attr_p_status);
-err_create_proximty_device_file:
+err_create_proximity_device_file:
 	class_destroy(optical_class);
 error_optical_class_create:
 	device_remove_file(bma250_powerkey_dev, &dev_attr_clear_powerkey_flag);
