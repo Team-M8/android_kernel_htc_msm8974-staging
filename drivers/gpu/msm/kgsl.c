@@ -2113,7 +2113,7 @@ static struct kgsl_cmdbatch *kgsl_cmdbatch_create(struct kgsl_device *device,
 	cmdbatch->device = device;
 	cmdbatch->ibcount = (flags & KGSL_CONTEXT_SYNC) ? 0 : numibs;
 	cmdbatch->context = context;
-	cmdbatch->flags = flags & ~KGSL_CONTEXT_SUBMIT_IB_LIST;
+	cmdbatch->flags = flags & ~KGSL_CMDBATCH_SUBMIT_IB_LIST;
 
 	/* Add a timer to help debug sync deadlocks */
 	setup_timer(&cmdbatch->timer, _kgsl_cmdbatch_timer,
@@ -2215,7 +2215,7 @@ static struct kgsl_cmdbatch *_kgsl_cmdbatch_create(struct kgsl_device *device,
 	if (IS_ERR(cmdbatch))
 		return cmdbatch;
 
-	if (!(flags & KGSL_CONTEXT_SYNC)) {
+	if (!(flags & KGSL_CMDBATCH_SYNC)) {
 		if (copy_from_user(cmdbatch->ibdesc, (void __user *) cmdlist,
 			sizeof(struct kgsl_ibdesc) * numcmds)) {
 			ret = -EFAULT;
@@ -2264,7 +2264,7 @@ static long kgsl_ioctl_rb_issueibcmds(struct kgsl_device_private *dev_priv,
 	long result = -EINVAL;
 
 	/* The legacy functions don't support synchronization commands */
-	if (param->flags & KGSL_CONTEXT_SYNC)
+	if (param->flags & KGSL_CMDBATCH_SYNC)
 		return -EINVAL;
 
 	/* Get the context */
@@ -2272,7 +2272,7 @@ static long kgsl_ioctl_rb_issueibcmds(struct kgsl_device_private *dev_priv,
 	if (context == NULL)
 		goto done;
 
-	if (param->flags & KGSL_CONTEXT_SUBMIT_IB_LIST) {
+	if (param->flags & KGSL_CMDBATCH_SUBMIT_IB_LIST) {
 		/*
 		 * Do a quick sanity check on the number of IBs in the
 		 * submission
@@ -2325,7 +2325,7 @@ static long kgsl_ioctl_submit_commands(struct kgsl_device_private *dev_priv,
 	long result = -EINVAL;
 
 	/* The number of IBs are completely ignored for sync commands */
-	if (!(param->flags & KGSL_CONTEXT_SYNC)) {
+	if (!(param->flags & KGSL_CMDBATCH_SYNC)) {
 		if (param->numcmds == 0 || param->numcmds > KGSL_MAX_NUMIBS)
 			return -EINVAL;
 	} else if (param->numcmds != 0) {
