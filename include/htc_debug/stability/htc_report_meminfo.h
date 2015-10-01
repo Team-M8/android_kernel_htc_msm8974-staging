@@ -5,6 +5,13 @@ struct page;
 struct seq_file;
 struct sysinfo;
 
+static struct super_block *blockdev_superblock __read_mostly;
+
+static inline int sb_is_blkdev_sb(struct super_block *sb)
+{
+        return sb == blockdev_superblock;
+}
+
 enum meminfo_stat_item {
 	NR_KMALLOC_PAGES,
 	NR_VMALLOC_PAGES,
