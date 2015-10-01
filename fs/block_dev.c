@@ -29,6 +29,7 @@
 #include <linux/cleancache.h>
 #include <asm/uaccess.h>
 #include "internal.h"
+#include <htc_debug/stability/htc_report_meminfo.h>
 
 struct bdev_inode {
 	struct block_device bdev;
@@ -455,8 +456,6 @@ static struct file_system_type bd_type = {
 	.kill_sb	= kill_anon_super,
 };
 
-static struct super_block *blockdev_superblock __read_mostly;
-
 void __init bdev_cache_init(void)
 {
 	int err;
@@ -582,11 +581,7 @@ static struct block_device *bd_acquire(struct inode *inode)
 	return bdev;
 }
 
-static inline int sb_is_blkdev_sb(struct super_block *sb)
-{
-	return sb == blockdev_superblock;
-}
-
+/* Call when you free inode */
 
 void bd_forget(struct inode *inode)
 {
