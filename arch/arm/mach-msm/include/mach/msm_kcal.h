@@ -1,11 +1,10 @@
 /*
- * arch/arm/mach-msm/include/mach/kcal.h
+ * arch/arm/mach-msm/include/mach/msm_kcal.h
  *
  * Copyright (c) 2013, LGE Inc. All rights reserved
  * Copyright (c) 2011-2013, The Linux Foundation. All rights reserved.
- * Copyright (c) 2014 Paul Reioux <reioux@gmail.com>
- * Copyright (c) 2014 Alex Deddo <adeddo27@gmail.com>
- *
+ * Copyright (c) 2014, savoca <adeddo27@gmail.com>
+ * Copyright (c) 2014, Paul Reioux <reioux@gmail.com>
  *
  * This software is licensed under the terms of the GNU General Public
  * License version 2, as published by the Free Software Foundation, and
@@ -17,18 +16,18 @@
  * GNU General Public License for more details.
  */
 
-struct kcal_data {
-	int red;
-	int green;
-	int blue;
-};
-
 struct kcal_platform_data {
 	int (*set_values) (int r, int g, int b);
 	int (*get_values) (int *r, int *g, int *b);
 	int (*refresh_display) (void);
 	int (*set_min) (int min);
 	int (*get_min) (int *min);
+	int (*set_invert) (int inv);
+	int (*get_invert) (int *inv);
 };
 
-void __init add_lcd_kcal_devices(void);
+int update_preset_lcdc_lut(int kr, int kg, int kb);
+
+int mdss_dsi_panel_invert(int enable);
+
+int __init msm_kcal_ctrl_init(void);

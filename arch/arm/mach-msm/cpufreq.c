@@ -34,6 +34,8 @@
 #include <mach/socinfo.h>
 #include <mach/cpufreq.h>
 
+#include <mach/clk-provider.h>
+
 #include "acpuclock.h"
 
 #ifdef CONFIG_DEBUG_FS
