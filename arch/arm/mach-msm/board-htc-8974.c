@@ -863,7 +863,7 @@ void __init htc_8974_init_early(void)
 		pr_err("%s: not enough membank\n", __func__);
 		return;
 	}
-
+	
 	bank = &meminfo.bank[1];
 	start = bank->start + SZ_1M + HTC_8974_PERSISTENT_RAM_SIZE;
 	ret = memblock_remove(start, SZ_1M);
@@ -871,7 +871,8 @@ void __init htc_8974_init_early(void)
 		pr_info("Hardboot page reserved at 0x%X\n", start);
 	else
 		pr_err("Failed to reserve space for hardboot page at 0x%X!\n", start);
-#endif	
+#endif
+
 	persistent_ram_early_init(&htc_8974_persistent_ram);
 
 }
