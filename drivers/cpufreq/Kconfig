@@ -226,7 +226,20 @@ config CPU_FREQ_DEFAULT_GOV_DANCEDANCE
 	bool "DanceDance"
 	select CPU_FREQ_GOV_DANCEDANCE
 
+config CPU_FREQ_DEFAULT_GOV_MYTHX_PLUG
+	bool "mythx_plug"
+	select CPU_FREQ_GOV_MYTHX_PLUG
+	help
+	  Use the CPUFreq governor 'mythx_plug' as default.
+	  This governor is an adapted version of Interactive, created to balance fluidity with batterylife.
+
 endchoice
+
+config CPU_FREQ_GOV_MYTHX_PLUG
+	tristate "'mythx_plug' cpufreq policy governor"
+	help
+	This governor is aimed to conserve battery and not sacrifice any performance.
+	It is based on Interactive and a mere adaptation of it.
 
 config CPU_FREQ_GOV_DANCEDANCE
 	tristate "'DanceDance' governor"

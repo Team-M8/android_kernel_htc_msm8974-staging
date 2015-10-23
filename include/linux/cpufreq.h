@@ -382,6 +382,9 @@ extern struct cpufreq_governor cpufreq_gov_elementalx;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_DANCEDANCE)
 extern struct cpufreq_governor cpufreq_gov_dancedance;
 #define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_dancedance)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_MYTHX_PLUG)
+extern struct cpufreq_governor cpufreq_gov_mythx_plug;
+#define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_mythx_plug)
 #endif
 
 #define CPUFREQ_ENTRY_INVALID ~0
