@@ -132,12 +132,13 @@ static int fb_notifier_callback(struct notifier_block *nb,
 		blank = evdata->data;
 		if (*blank == FB_BLANK_UNBLANK) {
 			// Make decision based on bat_threshold_ignore
-			if (psy && bat_threshold_ignore)
+			if (psy && bat_threshold_ignore) {
 				// If current level > ignore threshold, then queue UP work
 				if (get_power_supply_level() > bat_threshold_ignore)
 					msm_zen_dec_wake();
 			else
 				msm_zen_dec_wake();
+			}
 		}
 	}
 
