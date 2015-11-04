@@ -97,7 +97,6 @@ enum multi_stream msm_comm_get_stream_output_mode(struct msm_vidc_inst *inst)
 	}
 	return HAL_VIDEO_DECODER_PRIMARY;
 
-
 }
 
 static int msm_comm_get_load(struct msm_vidc_core *core,
