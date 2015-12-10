@@ -30,17 +30,6 @@
 #define KGSL_TIMEOUT_DEFAULT        0xFFFFFFFF
 #define KGSL_TIMEOUT_PART           50 /* 50 msec */
 
-#define FIRST_TIMEOUT (HZ / 2)
-
-
-/* KGSL device state is initialized to INIT when platform_probe		*
- * sucessfully initialized the device.  Once a device has been opened	*
- * (started) it becomes active.  NAP implies that only low latency	*
- * resources (for now clocks on some platforms) are off.  SLEEP implies	*
- * that the KGSL module believes a device is idle (has been inactive	*
- * past its timer) and all system resources are released.  SUSPEND is	*
- * requested by the kernel and will be enforced upon all open devices.	*/
-
 #define KGSL_STATE_NONE		0x00000000
 #define KGSL_STATE_INIT		0x00000001
 #define KGSL_STATE_ACTIVE	0x00000002
