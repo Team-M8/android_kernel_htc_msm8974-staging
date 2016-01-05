@@ -34,15 +34,10 @@
 #include <linux/workqueue.h>
 #include <linux/moduleparam.h>
 #include <linux/jiffies.h>
-#include <linux/earlysuspend.h>
 #include <linux/input.h>
 #include <linux/kthread.h>
 #include <linux/slab.h>
 #include <linux/kernel_stat.h>
-
-#ifdef CONFIG_HAS_EARLYSUSPEND
-#include <linux/earlysuspend.h>
-#endif
 
 #ifdef CONFIG_CPU_FREQ_GOV_SMARTMAX_TEGRA
 extern int tegra_input_boost (struct cpufreq_policy *policy,
@@ -59,20 +54,19 @@ extern int tegra_input_boost (struct cpufreq_policy *policy,
  */
 
 
-#ifdef CONFIG_CPU_FREQ_GOV_SMARTMAX_ENRC2B
-#define DEFAULT_SUSPEND_IDEAL_FREQ 475000
-#define DEFAULT_AWAKE_IDEAL_FREQ 475000
+#define DEFAULT_SUSPEND_IDEAL_FREQ 268800
+#define DEFAULT_AWAKE_IDEAL_FREQ 268800
 #define DEFAULT_RAMP_UP_STEP 300000
-#define DEFAULT_RAMP_DOWN_STEP 150000
-#define DEFAULT_MAX_CPU_LOAD 80
-#define DEFAULT_MIN_CPU_LOAD 50
+#define DEFAULT_RAMP_DOWN_STEP 500000
+#define DEFAULT_MAX_CPU_LOAD 70
+#define DEFAULT_MIN_CPU_LOAD 35
 #define DEFAULT_UP_RATE 30000
 #define DEFAULT_DOWN_RATE 60000
 #define DEFAULT_SAMPLING_RATE 30000
 // default to 3 * sampling_rate
-#define DEFAULT_INPUT_BOOST_DURATION 90000
-#define DEFAULT_TOUCH_POKE_FREQ 910000
-#define DEFAULT_BOOST_FREQ 910000
+#define DEFAULT_INPUT_BOOST_DURATION 60000
+#define DEFAULT_TOUCH_POKE_FREQ 422400
+#define DEFAULT_BOOST_FREQ 422400
 /*
  * from cpufreq_wheatley.c
  * Not all CPUs want IO time to be accounted as busy; this dependson how
@@ -83,7 +77,6 @@ extern int tegra_input_boost (struct cpufreq_policy *policy,
  */
 #define DEFAULT_IO_IS_BUSY 0
 #define DEFAULT_IGNORE_NICE 1
-#endif
 
 #ifdef CONFIG_CPU_FREQ_GOV_SMARTMAX_PRIMOU
 #define DEFAULT_SUSPEND_IDEAL_FREQ 368000
@@ -266,10 +259,6 @@ static bool boost_running = false;
 static unsigned int ideal_freq;
 static bool is_suspended = false;
 static unsigned int min_sampling_rate;
-
-#ifdef CONFIG_HAS_EARLYSUSPEND
-static struct early_suspend smartmax_early_suspend_handler;
-#endif
 
 #define LATENCY_MULTIPLIER			(1000)
 #define MIN_LATENCY_MULTIPLIER			(100)
@@ -1179,8 +1168,6 @@ static int cpufreq_smartmax_boost_task(void *data) {
 	return 0;
 }
 
-#ifdef CONFIG_INPUT_MEDIATOR
-
 static void smartmax_input_event(struct input_handle *handle, unsigned int type,
 		unsigned int code, int value) {
 	if (!is_suspended && touch_poke && type == EV_SYN && code == SYN_REPORT) {
@@ -1196,26 +1183,13 @@ static void smartmax_input_event(struct input_handle *handle, unsigned int type,
 	}
 }
 
+#ifdef CONFIG_INPUT_MEDIATOR
+
 static struct input_mediator_handler smartmax_input_mediator_handler = {
 	.event = smartmax_input_event,
 	};
 
 #else
-
-static void dbs_input_event(struct input_handle *handle, unsigned int type,
-		unsigned int code, int value) {
-	if (touch_poke && type == EV_SYN && code == SYN_REPORT) {
-		// no need to bother if currently a boost is running anyway
-		if (boost_task_alive && boost_running)
-			return;
-
-		if (boost_task_alive) {
-			cur_boost_freq = touch_poke_freq;
-			cur_boost_duration = input_boost_duration;
-			wake_up_process(boost_task);
-		}
-	}
-}
 
 static int dbs_input_connect(struct input_handler *handler,
 		struct input_dev *dev, const struct input_device_id *id) {
@@ -1273,30 +1247,12 @@ static const struct input_device_id dbs_ids[] = {
 };
 
 static struct input_handler dbs_input_handler = { 
-	.event = dbs_input_event,
+	.event = smartmax_input_event,
 	.connect = dbs_input_connect, 
 	.disconnect = dbs_input_disconnect,
 	.name = "cpufreq_smartmax_eps", 
 	.id_table = dbs_ids, 
 	};
-#endif
-
-#ifdef CONFIG_HAS_EARLYSUSPEND
-static void smartmax_early_suspend(struct early_suspend *h)
-{
-	dprintk(SMARTMAX_DEBUG_SUSPEND, "%s\n", __func__);
-	ideal_freq = suspend_ideal_freq;
-	is_suspended = true;
-	smartmax_update_min_max_allcpus();
-}
-
-static void smartmax_late_resume(struct early_suspend *h)
-{
-	dprintk(SMARTMAX_DEBUG_SUSPEND, "%s\n", __func__);
-	ideal_freq = awake_ideal_freq;
-	is_suspended = false;
-	smartmax_update_min_max_allcpus();
-}
 #endif
 
 static int cpufreq_governor_smartmax_eps(struct cpufreq_policy *new_policy,
@@ -1365,9 +1321,6 @@ static int cpufreq_governor_smartmax_eps(struct cpufreq_policy *new_policy,
 				mutex_unlock(&dbs_mutex);
 				return rc;
 			}
-#ifdef CONFIG_HAS_EARLYSUSPEND
-			register_early_suspend(&smartmax_early_suspend_handler);
-#endif
 			/* policy latency is in nS. Convert it to uS first */
 			latency = new_policy->cpuinfo.transition_latency / 1000;
 			if (latency == 0)
@@ -1415,9 +1368,6 @@ static int cpufreq_governor_smartmax_eps(struct cpufreq_policy *new_policy,
 			input_unregister_mediator_secondary(&smartmax_input_mediator_handler);
 #else
 			input_unregister_handler(&dbs_input_handler);
-#endif
-#ifdef CONFIG_HAS_EARLYSUSPEND
-			unregister_early_suspend(&smartmax_early_suspend_handler);
 #endif
 		}
 		
@@ -1482,12 +1432,6 @@ static int __init cpufreq_smartmax_init(void) {
 		mutex_init(&this_smartmax->timer_mutex);
 	}
 
-#ifdef CONFIG_HAS_EARLYSUSPEND
-	smartmax_early_suspend_handler.suspend = smartmax_early_suspend;
-	smartmax_early_suspend_handler.resume = smartmax_late_resume;
-	smartmax_early_suspend_handler.level = EARLY_SUSPEND_LEVEL_DISABLE_FB + 100;
-#endif
-	
 	return cpufreq_register_governor(&cpufreq_gov_smartmax_eps);
 }
 
@@ -1501,7 +1445,7 @@ static void __exit cpufreq_smartmax_exit(void) {
 	unsigned int i;
 	struct smartmax_info_s *this_smartmax;
 
-	cpufreq_unregister_governor(&cpufreq_gov_smartmax);
+	cpufreq_unregister_governor(&cpufreq_gov_smartmax_eps);
 
 	for_each_possible_cpu(i)
 	{
