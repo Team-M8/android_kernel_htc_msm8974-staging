@@ -103,10 +103,7 @@ static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 		unsigned long rate = new_freq * 1000;
 		rate = clk_round_rate(cpu_clk[policy->cpu], rate);
 		ret = clk_set_rate(cpu_clk[policy->cpu], rate);
-		if (!ret) {
-			freq_index[policy->cpu] = index;
-			update_l2_bw(NULL);
-		}
+
 	} else {
 		ret = acpuclk_set_rate(policy->cpu, new_freq, SETRATE_CPUFREQ);
 	}
@@ -444,8 +441,8 @@ static int cpufreq_parse_dt(struct device *dev)
 
 	*krait_freq_table = *freq_table;
 
-	for (i = 0, j = 0; i < nf; i++, j += 3)
-		krait_freq_table[i].frequency = data[j];
+	for (i = 0; i < nf; i++)
+		krait_freq_table[i].frequency = data[i];
 	krait_freq_table[i].frequency = CPUFREQ_TABLE_END;
 #endif
 
