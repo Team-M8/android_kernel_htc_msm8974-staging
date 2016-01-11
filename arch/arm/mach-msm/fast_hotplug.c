@@ -22,7 +22,6 @@
 #include <linux/sched.h>
 #include <linux/cpufreq.h>
 #include <linux/module.h>
-#include <linux/powersuspend.h>
 
 #define HOTPLUG_INFO_TAG	"[HOTPLUG] : "
 
@@ -166,7 +165,7 @@ static int get_slowest_cpu(void){
 	return slowest_cpu;
 }
 
-static void plug_in(int online_cpu_count){
+static __cpuinit void plug_in(int online_cpu_count){
 	int cpu;
 	mutex_lock(&mutex);
 	singlecore = false;
@@ -181,7 +180,8 @@ static void plug_in(int online_cpu_count){
 	mutex_unlock(&mutex);
 	pr_info(HOTPLUG_INFO_TAG"Plugged in a core !");
 }
-static void plug_out(int online_cpu_count){
+
+static void __cpuinit plug_out(int online_cpu_count){
 	mutex_lock(&mutex);
 	cpu_down(get_slowest_cpu());
 	if(online_cpu_count <= 2){
@@ -195,7 +195,7 @@ static void plug_out(int online_cpu_count){
 /*
  * Main function of the hotplug
  */
-static void hotplug(struct work_struct *work){
+static void __cpuinit hotplug(struct work_struct *work){
 	int online_cpu_count;
 	unsigned long load = avg_nr_running();
 
@@ -328,43 +328,6 @@ static struct input_handler hotplug_input_handler = {
 };
 
 /*
- * Suspend / Resume
- */
-
-
-static void hotplug_power_suspend(struct power_suspend *h) {
-	int cpu;
-	if(screen_off_singlecore){
-		mutex_lock(&mutex);
-		flush_workqueue(hotplug_wq);
-		for_each_online_cpu(cpu){
-			if(cpu == 0)
-				continue;
-			pr_info(HOTPLUG_INFO_TAG"Bringing cpu %d down\n", cpu);
-			cpu_down(cpu);
-		}
-		singlecore = true;
-		is_sleeping = true;
-		mutex_unlock(&mutex);
-	}
-}
-
-static void hotplug_late_resume(struct power_suspend *h) {
-	pr_info(HOTPLUG_INFO_TAG"Screen on, let's boost the cpu !");
-	mutex_lock(&mutex);
-	is_boosted = true;
-	plug_in(num_online_cpus());
-	mod_timer(&unboost_timer, jiffies + msecs_to_jiffies(boost_duration));
-	queue_delayed_work_on(0, hotplug_wq, &hotplug_work, msecs_to_jiffies(1));
-	mutex_unlock(&mutex);
-
-}
-
-static struct power_suspend hotplug_power_suspend_handler = {
-	.suspend = hotplug_power_suspend,
-	.resume = hotplug_late_resume,
-};
-/*
  * Initialization of the module
  */
 static int __init hotplug_init(void)
@@ -382,7 +345,7 @@ static int __init hotplug_init(void)
 
 	INIT_DELAYED_WORK(&hotplug_work, hotplug);
 
-	register_power_suspend(&hotplug_power_suspend_handler);
+//	register_power_suspend(&hotplug_power_suspend_handler);
 
 	queue_delayed_work_on(0, hotplug_wq, &hotplug_work, msecs_to_jiffies(REFRESH_RATE));
 
