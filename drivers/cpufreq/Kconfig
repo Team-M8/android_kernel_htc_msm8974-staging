@@ -15,6 +15,13 @@ config CPU_FREQ
 
 	  If in doubt, say N.
 
+config CPU_BOOST
+	bool "CPU Input Boost"
+	default y
+	help
+	  
+	  If in doubt, say N.
+
 if CPU_FREQ
 
 config CPU_FREQ_TABLE
