@@ -1057,4 +1057,8 @@ config TOUCHSCREEN_GT9XX
 
 source "drivers/input/touchscreen/gt9xx/Kconfig"
 
+config STATE_NOTIFIER
+        bool "State Notifier"
+	default y
+
 endif
