@@ -61,7 +61,7 @@
 static int fast_hotplug_enabled = FAST_HOTPLUG_ENABLED;
 static int __cpuinit enable_fast_hotplug(const char *val, const struct kernel_param *kp);
 
-static struct __cpuinit kernel_param_ops params_ops_enable = {
+static struct __cpuinit kernel_param_ops __cpuinitdata params_ops_enable = {
        .set = enable_fast_hotplug,
        .get = param_get_uint,
 };
