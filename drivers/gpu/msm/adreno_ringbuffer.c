@@ -194,7 +194,7 @@ err:
 	return ret;
 }
 
-inline int adreno_ringbuffer_load_pm4_ucode(struct kgsl_device *device,
+static inline int adreno_ringbuffer_load_pm4_ucode(struct kgsl_device *device,
 			unsigned int start, unsigned int end, unsigned int addr)
 {
 	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
@@ -239,7 +239,7 @@ err:
 	return ret;
 }
 
-inline int adreno_ringbuffer_load_pfp_ucode(struct kgsl_device *device,
+static inline int adreno_ringbuffer_load_pfp_ucode(struct kgsl_device *device,
 			unsigned int start, unsigned int end, unsigned int addr)
 {
 	struct adreno_device *adreno_dev = ADRENO_DEVICE(device);
