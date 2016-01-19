@@ -172,7 +172,7 @@ static const inline bool is_cpu_secure(void)
 		return true;
 }
 #else
-static const inline bool is_cpu_secure(void)
+static inline const bool is_cpu_secure(void)
 {
 	return false;
 }

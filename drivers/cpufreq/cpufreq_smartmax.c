@@ -558,7 +558,7 @@ static inline void cpufreq_smartmax_get_ramp_direction(struct smartmax_info_s *t
 	}
 }
 
-static void inline cpufreq_smartmax_calc_load(int j)
+static inline void cpufreq_smartmax_calc_load(int j)
 {
 	struct smartmax_info_s *j_this_smartmax;
 	u64 cur_wall_time, cur_idle_time, cur_iowait_time;

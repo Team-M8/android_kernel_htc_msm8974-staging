@@ -97,7 +97,7 @@ void limLogSessionStates(tpAniSirGlobal pMac);
 \return none
   -------------------------------------------------------------*/
 
-tANI_U8 static
+static tANI_U8 
 defMsgDecision(tpAniSirGlobal pMac, tpSirMsgQ  limMsg)
 {
 
