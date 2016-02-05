@@ -82,7 +82,7 @@ static struct msm_mpdec_tuners {
 	.startdelay = MSM_MPDEC_STARTDELAY,
 	.delay = MSM_MPDEC_DELAY,
 	.pause = MSM_MPDEC_PAUSE,
-	.scroff_single_core = true,
+	.scroff_single_core = false,
 	.idle_freq = MSM_MPDEC_IDLE_FREQ,
 	.max_cpus = CONFIG_NR_CPUS,
 	.min_cpus = 1,
