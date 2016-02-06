@@ -100,3 +100,5 @@ obj-$(CONFIG_SND_SOC_MDM9625) += snd-soc-mdm9625.o
 obj-$(CONFIG_SND_SOC_MSM_QDSP6V2_INTF) += qdsp6v2/
 snd-soc-msm8x10-objs := msm8x10.o
 obj-$(CONFIG_SND_SOC_MSM8X10) += snd-soc-msm8x10.o
+
+KBUILD_CFLAGS	+=-Wno-unused-const-variable

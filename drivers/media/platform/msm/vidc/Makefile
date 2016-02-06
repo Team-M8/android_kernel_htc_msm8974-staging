@@ -12,3 +12,5 @@ obj-$(CONFIG_MSM_VIDC_V4L2) := 	msm_v4l2_vidc.o \
 				vidc_hfi.o \
 				q6_hfi.o \
 				htc_msm_smem.o \
+
+KBUILD_CFLAGS	+=-Wno-unused-const-variable

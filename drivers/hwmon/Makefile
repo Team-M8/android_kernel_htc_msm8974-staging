@@ -137,3 +137,4 @@ obj-$(CONFIG_PMBUS)		+= pmbus/
 
 ccflags-$(CONFIG_HWMON_DEBUG_CHIP) := -DDEBUG
 
+KBUILD_CFLAGS	+=-Wno-unused-const-variable

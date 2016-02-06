@@ -21,3 +21,5 @@ obj-$(CONFIG_THERMAL_TSENS8974)	+= msm8974-tsens.o
 obj-$(CONFIG_THERMAL_QPNP)	+= qpnp-temp-alarm.o
 obj-$(CONFIG_THERMAL_QPNP_ADC_TM)	+= qpnp-adc-tm.o
 obj-$(CONFIG_THERMAL_DELTA)	+= htc_thermal.o
+
+KBUILD_CFLAGS	+=-Wno-unused-const-variable
