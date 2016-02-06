@@ -15,3 +15,4 @@ clean::
 	rm -rf .tmp_versions
 
 KBUILD_CFLAGS	+=-Wno-unused-const-variable
+KBUILD_CFLAGS	+=-Wno-misleading-indentation

@@ -61,3 +61,4 @@ obj-$(CONFIG_PRIMA_WLAN)	+= prima/
 obj-$(CONFIG_PRONTO_WLAN)	+= prima/
 
 KBUILD_CFLAGS	+=-Wno-unused-const-variable
+KBUILD_CFLAGS	+=-Wno-misleading-indentation
