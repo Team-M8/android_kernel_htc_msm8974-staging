@@ -373,7 +373,6 @@ KBUILD_CPPFLAGS := -D__KERNEL__
 KBUILD_CFLAGS   := -Wno-switch -Wno-array-bounds -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -Wno-unused-const-variable -Wno-misleading-indentation -Wno-shift-overflow \
 		   -fno-strict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
-		   -Wno-format-security \
 		   -std=gnu89\
 		   -fno-delete-null-pointer-checks
 KBUILD_AFLAGS_KERNEL :=
