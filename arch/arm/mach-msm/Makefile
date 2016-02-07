@@ -483,3 +483,4 @@ obj-$(CONFIG_MSM_SLEEPER) += msm-sleeper.o
 
 KBUILD_CFLAGS	+=-Wno-unused-const-variable
 KBUILD_CFLAGS	+=-Wno-misleading-indentation
+KBUILD_CFLAGS	+=-Wno-strict-aliasing

@@ -23,3 +23,4 @@ obj-$(CONFIG_THERMAL_QPNP_ADC_TM)	+= qpnp-adc-tm.o
 obj-$(CONFIG_THERMAL_DELTA)	+= htc_thermal.o
 
 KBUILD_CFLAGS	+=-Wno-unused-const-variable
+KBUILD_CFLAGS	+=-Wno-strict-aliasing

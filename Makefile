@@ -371,7 +371,7 @@ LINUXINCLUDE    := -I$(srctree)/arch/$(hdr-arch)/include \
 KBUILD_CPPFLAGS := -D__KERNEL__
 
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wmisleading-indentation \
-		   -fno-strict-aliasing -fno-common \
+		   -fstrict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
 		   -std=gnu89
 KBUILD_AFLAGS_KERNEL :=

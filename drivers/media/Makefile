@@ -12,3 +12,5 @@ obj-y += common/ platform/ rc/ video/
 
 obj-$(CONFIG_VIDEO_DEV) += radio/
 obj-$(CONFIG_DVB_CORE)  += dvb/
+
+KBUILD_CFLAGS	+=-Wno-strict-aliasing

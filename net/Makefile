@@ -72,3 +72,5 @@ obj-$(CONFIG_NFC)		+= nfc/
 obj-$(CONFIG_OPENVSWITCH)	+= openvswitch/
 obj-$(CONFIG_NET_ACTIVITY_STATS)		+= activity_stats.o
 obj-$(CONFIG_RMNET_DATA) += rmnet_data/
+
+KBUILD_CFLAGS	+=-Wno-strict-aliasing
