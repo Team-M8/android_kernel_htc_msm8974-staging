@@ -373,7 +373,7 @@ KBUILD_CPPFLAGS := -D__KERNEL__
 KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wmisleading-indentation \
 		   -fstrict-aliasing -fno-common \
 		   -Werror-implicit-function-declaration \
-		   -std=gnu89
+		   -std=gnu89 -O3
 KBUILD_AFLAGS_KERNEL :=
 KBUILD_CFLAGS_KERNEL :=
 KBUILD_AFLAGS   := -D__ASSEMBLY__
