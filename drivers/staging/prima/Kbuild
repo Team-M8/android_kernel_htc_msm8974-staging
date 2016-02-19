@@ -674,7 +674,8 @@ CDEFINES += -DEXISTS_MSM_SMSM
 endif
 
 # Fix build for GCC 4.7
-EXTRA_CFLAGS += -Wno-maybe-uninitialized -Wno-unused-function -Wno-strict-aliasing
+EXTRA_CFLAGS += -Wno-maybe-uninitialized -Wno-unused-function -Wno-strict-aliasing -fno-strict-aliasing -fno-inline-functions -fno-unswitch-loops -fno-predictive-commoning -fno-gcse-after-reload -fno-tree-loop-vectorize -fno-tree-loop-distribute-patterns -fno-tree-slp-vectorize -fno-vect-cost-model -fno-tree-partial-pre -fno-ipa-cp-clone
+
 KBUILD_CPPFLAGS += $(CDEFINES)
 
 # Module information used by KBuild framework
