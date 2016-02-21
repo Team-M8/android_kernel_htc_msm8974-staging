@@ -17,8 +17,6 @@
 #include <asm/page.h>
 #include <asm/pgtable.h>
 
-#include <htc_debug/stability/htc_report_meminfo.h>
-
 #include "internal.h"
 
 void __attribute__((weak)) arch_report_meminfo(struct seq_file *m)
@@ -181,11 +179,7 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
 		(unsigned long)(VMALLOC_TOTAL + report_vmalloc_saving_size()) >> 10,
 		vmi.used >> 10,
 		vmi.ioremap >> 10,
-#ifdef CONFIG_HTC_DEBUG_REPORT_MEMINFO
-		K(meminfo_total_pages(NR_VMALLOC_PAGES)),
-#else
 		vmi.alloc >> 10,
-#endif
 		vmi.map >> 10,
 		vmi.usermap >> 10,
 		vmi.vpages >> 10,
@@ -202,8 +196,6 @@ static int meminfo_proc_show(struct seq_file *m, void *v)
 	hugetlb_report_meminfo(m);
 
 	arch_report_meminfo(m);
-
-	report_meminfo(m, &i);
 
 	return 0;
 #undef K

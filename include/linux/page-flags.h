@@ -48,10 +48,7 @@ enum pageflags {
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 	PG_compound_lock,
 #endif
-#ifdef CONFIG_HTC_DEBUG_REPORT_MEMINFO
-	PG_kmalloc,			
-	PG_kgsl,
-#endif
+
 	PG_readahead,		
 	__NR_PAGEFLAGS,
 
@@ -196,14 +193,6 @@ TESTSCFLAG(HWPoison, hwpoison)
 #else
 PAGEFLAG_FALSE(HWPoison)
 #define __PG_HWPOISON 0
-#endif
-
-#ifdef CONFIG_HTC_DEBUG_REPORT_MEMINFO
-PAGEFLAG(Kmalloc, kmalloc)
-PAGEFLAG(Kgsl, kgsl)
-#else
-PAGEFLAG_FALSE(Kgsl) SETPAGEFLAG_NOOP(Kgsl)
-	CLEARPAGEFLAG_NOOP(Kgsl)
 #endif
 
 u64 stable_page_flags(struct page *page);

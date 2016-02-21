@@ -148,5 +148,3 @@ obj-$(CONFIG_BIF)		+= bif/
 
 obj-$(CONFIG_SENSORS)		+= sensors/
 
-# htc stability files
-obj-y += htc_debug/stability/

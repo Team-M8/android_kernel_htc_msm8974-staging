@@ -48,7 +48,6 @@
 #include <linux/syscalls.h>
 #include <linux/kprobes.h>
 #include <linux/user_namespace.h>
-#include <htc_debug/stability/dirty_file_detector.h>
 
 #include <linux/kmsg_dump.h>
 #include <generated/utsrelease.h>
@@ -332,9 +331,6 @@ static void migrate_to_reboot_cpu(void)
  */
 void kernel_restart(char *cmd)
 {
-#ifdef CONFIG_DIRTY_SYSTEM_DETECTOR
-	printk(KERN_EMERG "%s: system_dirty=%d\n", __func__, is_system_dirty());
-#endif
 	kernel_restart_prepare(cmd);
 	migrate_to_reboot_cpu();
 	syscore_shutdown();
