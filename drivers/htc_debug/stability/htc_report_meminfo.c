@@ -104,19 +104,6 @@ unsigned long cached_unmapped_pages(struct sysinfo *i)
 	return cached_unmapped;
 }
 
-unsigned long kgsl_unmapped_pages(void)
-{
-	long kgsl_alloc = kgsl_get_alloc_size(false) >> PAGE_SHIFT;
-	long kgsl_unmapped = kgsl_alloc -
-	                atomic_long_read(&kgsl_mapped_stat);
-
-	if (kgsl_unmapped < 0)
-		kgsl_unmapped = 0;
-
-	return kgsl_unmapped;
-}
-
-
 unsigned long meminfo_total_pages(enum meminfo_stat_item item)
 {
 	long total = atomic_long_read(&meminfo_stat[item]);
@@ -163,11 +150,9 @@ void report_meminfo_item(struct seq_file *m, enum meminfo_stat_item item)
 static void report_unmapped(struct seq_file *m, struct sysinfo *sysinfo)
 {
 	unsigned long cached_unmapped = cached_unmapped_pages(sysinfo);
-	unsigned long kgsl_unmapped = kgsl_unmapped_pages();
 
 #define K(x) ((x) << (PAGE_SHIFT - 10))
 	seq_printf(m, "%-16s%8lu kB\n", "CachedUnmapped: ", K(cached_unmapped));
-	seq_printf(m, "%-16s%8lu kB\n", "KgslUnmapped: ", K(kgsl_unmapped));
 #undef K
 }
 
