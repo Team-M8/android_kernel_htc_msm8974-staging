@@ -1,4 +1,4 @@
-ccflags-y := -Iinclude/uapi/drm -Iinclude/drm -Idrivers/gpu/msm -O3 -ffast-math -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4
+ccflags-y := -Iinclude/uapi/drm -Iinclude/drm -Idrivers/gpu/msm
 
 msm_kgsl_core-y = \
 	kgsl.o \
@@ -10,8 +10,7 @@ msm_kgsl_core-y = \
 	kgsl_gpummu.o \
 	kgsl_iommu.o \
 	kgsl_snapshot.o \
-	kgsl_events.o \
-	kgsl_htc.o
+	kgsl_events.o
 
 msm_kgsl_core-$(CONFIG_DEBUG_FS) += kgsl_debugfs.o
 msm_kgsl_core-$(CONFIG_MSM_KGSL_CFF_DUMP) += kgsl_cffdump.o
@@ -49,4 +48,4 @@ obj-$(CONFIG_MSM_KGSL) += msm_kgsl_core.o
 obj-$(CONFIG_MSM_KGSL) += msm_adreno.o
 obj-$(CONFIG_MSM_KGSL_2D) += msm_z180.o
 
-KBUILD_CFLAGS	+=-Wno-misleading-indentation
+KBUILD_CFLAGS	+=-Wno-misleading-indentation -O3 -ffast-math -fgcse-lm -fgcse-sm -fsched-spec-load -fforce-addr -fsingle-precision-constant -mcpu=cortex-a15 -mtune=cortex-a15 -marm -mfpu=neon-vfpv4

@@ -296,7 +296,6 @@ static int lowmem_shrink(struct shrinker *s, struct shrink_control *sc)
 		rcu_read_unlock();
 
 		if (should_dump_meminfo) {
-			show_meminfo();
 			dump_tasks();
 		}
 

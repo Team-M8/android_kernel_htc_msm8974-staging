@@ -22,7 +22,6 @@
 #include <linux/backing-dev.h>
 #include <linux/memcontrol.h>
 #include <linux/gfp.h>
-#include <htc_debug/stability/htc_report_meminfo.h>
 #include <linux/hugetlb.h>
 
 #include "internal.h"
@@ -161,7 +160,6 @@ out_put_single:
 		}
 	} else if (put_page_testzero(page)) {
 		if (PageHead(page)) {
-			kmalloc_count(page, 0);
 			__put_compound_page(page);
 		}
 		else

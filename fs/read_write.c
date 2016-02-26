@@ -20,7 +20,6 @@
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
 #include <mach/devices_cmdline.h>
-#include <htc_debug/stability/dirty_file_detector.h>
 
 const struct file_operations generic_ro_fops = {
 	.llseek		= generic_file_llseek,
@@ -484,35 +483,8 @@ SYSCALL_DEFINE3(write, unsigned int, fd, const char __user *, buf,
 	struct file *file;
 	ssize_t ret = -EBADF;
 	int fput_needed;
-#ifdef CONFIG_DIRTY_SYSTEM_DETECTOR
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,0))
-	struct mount *mnt;
-#else
-	struct vfsmount *mnt;
-#endif
-#endif
 
 	file = fget_light(fd, &fput_needed);
-
-#ifdef CONFIG_DIRTY_SYSTEM_DETECTOR
-	
-	
-	if (!get_tamper_sf() && file != NULL) {
-		
-		if (board_mfg_mode() != 2
-				&& strcmp("htcunzip", current->comm)) {
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,4,0))
-			mnt = real_mount(file->f_path.mnt);
-#else
-			mnt = file->f_path.mnt;
-#endif
-			if (!strcmp("system",  mnt->mnt_mountpoint->d_name.name)) {
-				printk("%s to /system partition: file(%s)\n", __func__, file->f_path.dentry->d_name.name);
-				mark_system_dirty(file->f_path.dentry->d_name.name);
-			}
-		}
-	}
-#endif
 	if (file) {
 		loff_t pos = file_pos_read(file);
 
