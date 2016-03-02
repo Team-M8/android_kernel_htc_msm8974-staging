@@ -21,7 +21,7 @@ mcKernelApi-objs := MobiCoreKernelApi/main.o \
 
 # Release mode by default
 ccflags-y := -DNDEBUG -I$(GUD_ROOT_FOLDER)
-ccflags-y += -Wno-declaration-after-statement
+ccflags-y += -Wno-declaration-after-statement -Wno-unused-const-variable
 
 ccflags-$(CONFIG_MOBICORE_DEBUG) += -DDEBUG
 ccflags-$(CONFIG_MOBICORE_VERBOSE) += -DDEBUG_VERBOSE
