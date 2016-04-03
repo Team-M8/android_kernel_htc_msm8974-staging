@@ -991,6 +991,32 @@ static void handle_sys_error(enum command_response cmd, void *data)
 		msm_vidc_queue_v4l2_event(inst,
 				V4L2_EVENT_MSM_VIDC_SYS_ERROR);
 	}
+
+	hdev = core->device;
+	if (!hdev) {
+		dprintk(VIDC_ERR, "hdev in core is NULL\n");
+		mutex_unlock(&core->lock);
+		return;
+	}
+
+        if (core->state == VIDC_CORE_INVALID) {
+		dprintk(VIDC_DBG, "Calling core_release\n");
+		rc = call_hfi_op(hdev, core_release,
+			hdev->hfi_device_data);
+		if (rc) {
+			dprintk(VIDC_ERR, "core_release failed\n");
+			mutex_unlock(&core->lock);
+			return;
+		}
+        }
+
+        core->state = VIDC_CORE_UNINIT;
+        call_hfi_op(hdev, unload_fw, hdev->hfi_device_data);
+        dprintk(VIDC_DBG, "Firmware unloaded\n");
+        if (core->resources.ocmem_size)
+            msm_comm_unvote_buses(core, DDR_MEM|OCMEM_MEM);
+        else
+            msm_comm_unvote_buses(core, DDR_MEM);
 	mutex_unlock(&core->lock);
 
 
