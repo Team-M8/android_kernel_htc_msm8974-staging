@@ -162,6 +162,12 @@ config CPU_FREQ_DEFAULT_GOV_HELLSACTIVE
 	  you to get a full dynamic cpu frequency capable system by simply
 	  loading your cpufreq low-level hardware driver, using the
 	  'interactive' governor for latency-sensitive workloads.
+	  
+config CPU_FREQ_DEFAULT_GOV_IMPULSE
+  	bool "impulse"
+	select CPU_FREQ_GOV_IMPULSE
+  	help
+
 
 config CPU_FREQ_DEFAULT_GOV_IMPULSE
 	bool "impulse"
@@ -455,6 +461,10 @@ config CPU_FREQ_GOV_IMPULSE
 	  designed for latency-sensitive workloads.
 
 	  If in doubt, say N.	  
+
+config CPU_FREQ_GOV_IMPULSE
+	tristate "'impulse' cpufreq policy governor"
+	help
 
 config CPU_FREQ_GOV_INTELLIACTIVE
 	tristate "'intelliactive' cpufreq policy governor"
