@@ -14,4 +14,4 @@ clean::
 	rm -f *.o *.ko *.mod.c *.mod.o *~ .*.cmd Module.symvers
 	rm -rf .tmp_versions
 
-KBUILD_CFLAGS	+=-Wno-unused-const-variable -Wno-misleading-indentation -Wno-strict-aliasing
+
