@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2010-2014, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -29,10 +29,22 @@ static DEFINE_SPINLOCK(tz_lock);
  * per frame for 60fps content.
  */
 #define FLOOR			5000
+/*
+ * MIN_BUSY is 1 msec for the sample to be sent
+ */
+#define MIN_BUSY			1000
 #define LONG_FLOOR		50000
 #define HIST			5
 #define TARGET			80
 #define CAP			75
+
+/*
+ * Use BUSY_BIN to check for fully busy rendering
+ * intervals that may need early intervention when
+ * seen with LONG_FRAME lengths
+ */
+#define BUSY_BIN		95
+#define LONG_FRAME		25000
 
 /*
  * CEILING is 50msec, larger than any standard
@@ -97,11 +109,13 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 	int act_level;
 	int norm_cycles;
 	int gpu_percent;
+	static int busy_bin, frame_flag;
 
 	if (priv->bus.num)
 		stats.private_data = &b;
 	else
 		stats.private_data = NULL;
+
 	result = devfreq->profile->get_dev_status(devfreq->dev.parent, &stats);
 	if (result) {
 		pr_err(TAG "get_status failed %d\n", result);
@@ -122,11 +136,22 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 	/*
 	 * Do not waste CPU cycles running this algorithm if
 	 * the GPU just started, or if less than FLOOR time
-	 * has passed since the last run.
+	 * has passed since the last run or the gpu hasn't been
+	 * busier than MIN_BUSY.
 	 */
 	if ((stats.total_time == 0) ||
-		(priv->bin.total_time < FLOOR)) {
-		return 1;
+		(priv->bin.total_time < FLOOR) ||
+		(unsigned int) priv->bin.busy_time < MIN_BUSY) {
+		return 0;
+	}
+
+	if ((stats.busy_time * 100 / stats.total_time) > BUSY_BIN) {
+		busy_bin += stats.busy_time;
+		if (stats.total_time > LONG_FRAME)
+			frame_flag = 1;
+	} else {
+		busy_bin = 0;
+		frame_flag = 0;
 	}
 
 	level = devfreq_get_freq_level(devfreq, stats.current_frequency);
@@ -140,8 +165,11 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 	 * If there is an extended block of busy processing,
 	 * increase frequency.  Otherwise run the normal algorithm.
 	 */
-	if (priv->bin.busy_time > CEILING) {
+	if (priv->bin.busy_time > CEILING ||
+		(busy_bin > CEILING && frame_flag)) {
 		val = -1 * level;
+		busy_bin = 0;
+		frame_flag = 0;
 	} else {
 #ifdef CONFIG_SIMPLE_GPU_ALGORITHM
 		if (simple_gpu_active != 0)
@@ -168,7 +196,7 @@ static int tz_get_target_freq(struct devfreq *devfreq, unsigned long *freq,
 	if (val) {
 		level += val;
 		level = max(level, 0);
-		level = min_t(int, level, devfreq->profile->max_state);
+		level = min_t(int, level, devfreq->profile->max_state - 1);
 		goto clear;
 	}
 

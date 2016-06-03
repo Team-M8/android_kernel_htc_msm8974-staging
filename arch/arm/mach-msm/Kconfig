@@ -2000,6 +2000,13 @@ config CPU_VOLTAGE_TABLE
 	help
 	  Krait User Votlage Control
 
+config MSM_LIMITER
+	bool "MSM Frequency Limiter Driver"
+	default y
+	help
+	  The MSM Frequency Limiter Driver controls max frequency limit for each CPU
+	  to desired value on suspend/resume
+
 config MSM_AVS_HW
 	bool "Enable Adaptive Voltage Scaling (AVS)"
 	default n
@@ -3249,9 +3256,3 @@ config HTC_MONITOR_SUBSYS_SLEEP_TIME
     bool "Monitor the sleep time of sub-system"
     help
         Support to monitor the sleep time of sub-system
-
-config MSM_SLEEPER
-    bool "Limit max frequency while screen is off"
-    default y
-    help
-      Limit max frequency while screen is off
