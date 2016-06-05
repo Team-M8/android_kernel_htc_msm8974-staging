@@ -88,6 +88,20 @@ struct rcu_dynticks {
 				    /* Process level is worth LLONG_MAX/2. */
 	int dynticks_nmi_nesting;   /* Track NMI nesting level. */
 	atomic_t dynticks;	    /* Even value for idle, else odd. */
+#ifdef CONFIG_RCU_FAST_NO_HZ
+	int dyntick_drain;	    /* Prepare-for-idle state variable. */
+	unsigned long dyntick_holdoff;
+				    /* No retries for the jiffy of failure. */
+	struct timer_list idle_gp_timer;
+				    /* Wake up CPU sleeping with callbacks. */
+	unsigned long idle_gp_timer_expires;
+				    /* When to wake up CPU (for repost). */
+	bool idle_first_pass;	    /* First pass of attempt to go idle? */
+	unsigned long nonlazy_posted;
+				    /* # times non-lazy CBs posted to CPU. */
+	unsigned long nonlazy_posted_snap;
+				    /* idle-period nonlazy_posted snapshot. */
+#endif /* #ifdef CONFIG_RCU_FAST_NO_HZ */
 };
 
 /* RCU's kthread states for tracing. */
@@ -371,6 +385,17 @@ struct rcu_state {
 
 	raw_spinlock_t onofflock;		/* exclude on/offline and */
 						/*  starting new GP. */
+	struct rcu_head *orphan_nxtlist;	/* Orphaned callbacks that */
+						/*  need a grace period. */
+	struct rcu_head **orphan_nxttail;	/* Tail of above. */
+	struct rcu_head *orphan_donelist;	/* Orphaned callbacks that */
+						/*  are ready to invoke. */
+	struct rcu_head **orphan_donetail;	/* Tail of above. */
+	long qlen_lazy;				/* Number of lazy callbacks. */
+	long qlen;				/* Total number of callbacks. */
+	struct task_struct *rcu_barrier_in_progress;
+						/* Task doing rcu_barrier(), */
+						/*  or NULL if no barrier. */
 	raw_spinlock_t fqslock;			/* Only one task forcing */
 						/*  quiescent states. */
 	unsigned long jiffies_force_qs;		/* Time at which to invoke */
@@ -449,7 +474,7 @@ static void rcu_report_exp_rnp(struct rcu_state *rsp, struct rcu_node *rnp,
 #endif /* #if defined(CONFIG_HOTPLUG_CPU) || defined(CONFIG_TREE_PREEMPT_RCU) */
 static int rcu_preempt_pending(int cpu);
 static int rcu_preempt_cpu_has_callbacks(int cpu);
-static void __cpuinit rcu_preempt_init_percpu_data(int cpu);
+static void rcu_preempt_init_percpu_data(int cpu);
 static void rcu_preempt_cleanup_dying_cpu(void);
 static void __init __rcu_init_preempt(void);
 static void rcu_initiate_boost(struct rcu_node *rnp, unsigned long flags);
@@ -460,17 +485,18 @@ static bool rcu_is_callbacks_kthread(void);
 static void rcu_preempt_do_callbacks(void);
 static void rcu_boost_kthread_setaffinity(struct rcu_node *rnp,
 					  cpumask_var_t cm);
-static int __cpuinit rcu_spawn_one_boost_kthread(struct rcu_state *rsp,
+static int rcu_spawn_one_boost_kthread(struct rcu_state *rsp,
 						 struct rcu_node *rnp,
 						 int rnp_index);
 static void invoke_rcu_node_kthread(struct rcu_node *rnp);
 static void rcu_yield(void (*f)(unsigned long), unsigned long arg);
 #endif /* #ifdef CONFIG_RCU_BOOST */
 static void rcu_cpu_kthread_setrt(int cpu, int to_rt);
-static void __cpuinit rcu_prepare_kthreads(int cpu);
+static void rcu_prepare_kthreads(int cpu);
 static void rcu_prepare_for_idle_init(int cpu);
 static void rcu_cleanup_after_idle(int cpu);
 static void rcu_prepare_for_idle(int cpu);
+static void rcu_idle_count_callbacks_posted(void);
 static void print_cpu_stall_info_begin(void);
 static void print_cpu_stall_info(struct rcu_state *rsp, int cpu);
 static void print_cpu_stall_info_end(void);

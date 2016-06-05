@@ -34,8 +34,6 @@
 #include <linux/hugetlb.h>
 #include <linux/backing-dev.h>
 
-#include <htc_debug/stability/htc_report_meminfo.h>
-
 #include <asm/tlbflush.h>
 
 #include "internal.h"
@@ -391,7 +389,12 @@ void page_unlock_anon_vma(struct anon_vma *anon_vma)
 	anon_vma_unlock(anon_vma);
 }
 
-inline unsigned long
+/*
+ * At what user virtual address is page expected in @vma?
+ * Returns virtual address or -EFAULT if page's index/offset is not
+ * within the range mapped the @vma.
+ */
+static inline unsigned long
 vma_address(struct page *page, struct vm_area_struct *vma)
 {
 	pgoff_t pgoff = page->index << (PAGE_CACHE_SHIFT - PAGE_SHIFT);
@@ -812,11 +815,16 @@ void page_add_file_rmap(struct page *page)
 	if (atomic_inc_and_test(&page->_mapcount)) {
 		__inc_zone_page_state(page, NR_FILE_MAPPED);
 		mem_cgroup_inc_page_stat(page, MEMCG_NR_FILE_MAPPED);
-		mapped_count(page, 1);
 	}
 	mem_cgroup_end_update_page_stat(page, &locked, &flags);
 }
 
+/**
+ * page_remove_rmap - take down pte mapping from a page
+ * @page: page to remove mapping from
+ *
+ * The caller needs to hold the pte lock.
+ */
 void page_remove_rmap(struct page *page)
 {
 	struct address_space *mapping = page_mapping(page);
@@ -864,7 +872,6 @@ void page_remove_rmap(struct page *page)
 	} else {
 		__dec_zone_page_state(page, NR_FILE_MAPPED);
 		mem_cgroup_dec_page_stat(page, MEMCG_NR_FILE_MAPPED);
-		mapped_count(page, 0);
 	}
 out:
 	if (!anon)

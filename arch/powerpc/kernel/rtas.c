@@ -585,6 +585,23 @@ int rtas_get_sensor(int sensor, int index, int *state)
 }
 EXPORT_SYMBOL(rtas_get_sensor);
 
+int rtas_get_sensor_fast(int sensor, int index, int *state)
+{
+	int token = rtas_token("get-sensor-state");
+	int rc;
+
+	if (token == RTAS_UNKNOWN_SERVICE)
+		return -ENOENT;
+
+	rc = rtas_call(token, 2, 2, state, sensor, index);
+	WARN_ON(rc == RTAS_BUSY || (rc >= RTAS_EXTENDED_DELAY_MIN &&
+				    rc <= RTAS_EXTENDED_DELAY_MAX));
+
+	if (rc < 0)
+		return rtas_error_rc(rc);
+	return rc;
+}
+
 bool rtas_indicator_present(int token, int *maxindex)
 {
 	int proplen, count, i;
@@ -1025,6 +1042,9 @@ asmlinkage int ppc_rtas(struct rtas_args __user *uargs)
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
+	if (!rtas.entry)
+		return -EINVAL;
+
 	if (copy_from_user(&args, uargs, 3 * sizeof(u32)) != 0)
 		return -EFAULT;
 
@@ -1173,7 +1193,7 @@ int __init early_init_dt_scan_rtas(unsigned long node,
 static arch_spinlock_t timebase_lock;
 static u64 timebase = 0;
 
-void __cpuinit rtas_give_timebase(void)
+void rtas_give_timebase(void)
 {
 	unsigned long flags;
 
@@ -1190,7 +1210,7 @@ void __cpuinit rtas_give_timebase(void)
 	local_irq_restore(flags);
 }
 
-void __cpuinit rtas_take_timebase(void)
+void rtas_take_timebase(void)
 {
 	while (!timebase)
 		barrier();

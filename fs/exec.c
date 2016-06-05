@@ -1549,14 +1549,6 @@ static int format_corename(struct core_name *cn, long signr)
 	int pid_in_pattern = 0;
 	int err = 0;
 
-#ifdef CONFIG_HTC_INIT_COREDUMP
-	char init_core_pattern[CORENAME_MAX_SIZE] = "/data/core/%e.%p";
-	if((task_tgid_vnr(current) == 1) || (current->comm?(!strcmp(current->comm, "ueventd")):0) ){
-                ispipe = 0;
-                pat_ptr = init_core_pattern;
-	}
-#endif
-
 	cn->size = CORENAME_MAX_SIZE * atomic_read(&call_count);
 	cn->corename = kmalloc(cn->size, GFP_KERNEL);
 	cn->used = 0;
@@ -1969,10 +1961,6 @@ void do_coredump(long signr, int exit_code, struct pt_regs *regs)
 		wait_for_dump_helpers(cprm.file);
 close_fail:
 	if (cprm.file){
-#ifdef CONFIG_HTC_INIT_COREDUMP
-		if(task_tgid_vnr(current) == 1)
-			vfs_fsync(cprm.file, 1);
-#endif
 		filp_close(cprm.file, NULL);
 	}
 fail_dropcount:

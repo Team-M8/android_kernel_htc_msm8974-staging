@@ -2,7 +2,6 @@
 #include <linux/init.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
-#include <htc_debug/stability/dirty_file_detector.h>
 #include <htc_offalarm.h>
 
 static int offalarm_proc_show(struct seq_file *m, void *v)

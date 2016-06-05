@@ -1,3 +1,4 @@
+EXTRA_CFLAGS += -Wno-discarded-array-qualifiers
 snd-soc-88pm860x-objs := 88pm860x-codec.o
 snd-soc-ac97-objs := ac97.o
 snd-soc-ad1836-objs := ad1836.o
@@ -219,3 +220,5 @@ obj-$(CONFIG_SND_SOC_MSM_STUB)  += snd-soc-msm-stub.o
 obj-$(CONFIG_SND_SOC_MAX9877)	+= snd-soc-max9877.o
 obj-$(CONFIG_SND_SOC_TPA6130A2)	+= snd-soc-tpa6130a2.o
 obj-$(CONFIG_SOUND_CONTROL_HAX_3_GPL) += sound_control_3_gpl.o
+
+KBUILD_CFLAGS	+=-Wno-unused-const-variable

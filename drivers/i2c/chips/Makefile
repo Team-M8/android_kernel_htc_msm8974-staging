@@ -45,4 +45,4 @@ obj-$(CONFIG_LIGHTSENSOR_EPL88051) += epl88051.o
 ifeq ($(CONFIG_I2C_DEBUG_CHIP),y)
 EXTRA_CFLAGS += -DDEBUG
 endif
-
+KBUILD_CFLAGS	+=-Wno-strict-aliasing

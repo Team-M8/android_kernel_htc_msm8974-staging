@@ -189,6 +189,10 @@ ifeq ($(CONFIG_MACH_M8), y)
 	htc_dtb-$(CONFIG_ARCH_MSM8974)  += msm8974pro-ab-pm8941-m8whl-xd.dtb
 	htc_dtb-$(CONFIG_ARCH_MSM8974)  += msm8974pro-ab-pm8941-m8whl-xe.dtb
 	htc_dtb-$(CONFIG_ARCH_MSM8974)  += msm8974pro-ab-pm8941-m8whl-xf.dtb
+
+	htc_dtb-$(CONFIG_ARCH_MSM8974)  += msm8974pro-ab-pm8941-m8tl.dtb
+	htc_dtb-$(CONFIG_ARCH_MSM8974)  += msm8974pro-ab-pm8941-m8tl-xb.dtb
+	htc_dtb-$(CONFIG_ARCH_MSM8974)  += msm8974pro-ab-pm8941-m8tl-xc.dtb
 endif
 
 ifeq ($(CONFIG_MACH_MEM_UL), y)
@@ -197,7 +201,8 @@ endif
 
 ifeq ($(CONFIG_MACH_A5), y)
 	htc_dtb-$(CONFIG_ARCH_MSM8226)	+= msm8926-a5ul.dtb
-	htc_dtb-$(CONFIG_ARCH_MSM8226)	+= msm8926-a5dwg.dtb
+	htc_dtb-$(CONFIG_ARCH_MSM8226)	+= msm8226-a5dwg.dtb
+	htc_dtb-$(CONFIG_ARCH_MSM8226)	+= msm8926-a5dwgl.dtb
 endif
 
 ifeq ($(CONFIG_MACH_EYE_UL), y)

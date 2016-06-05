@@ -373,7 +373,7 @@ static struct input_handler blu_plug_input_handler = {
 /******************** Module parameters *********************/
 
 /* enabled */
-static __cpuinit int set_enabled(const char *val, const struct kernel_param *kp)
+static int set_enabled(const char *val, const struct kernel_param *kp)
 {
 	int ret = 0;
 

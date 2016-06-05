@@ -23,3 +23,6 @@ obj-$(CONFIG_AB8500_USB)	+= ab8500-usb.o
 fsl_usb2_otg-objs		:= fsl_otg.o otg_fsm.o
 obj-$(CONFIG_FSL_USB2_OTG)	+= fsl_usb2_otg.o
 obj-$(CONFIG_USB_MV_OTG)	+= mv_otg.o
+
+KBUILD_CFLAGS	+=-Wno-unused-const-variable
+KBUILD_CFLAGS	+=-Wno-misleading-indentation

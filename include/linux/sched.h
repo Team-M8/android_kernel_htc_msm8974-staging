@@ -729,6 +729,7 @@ struct user_struct {
 	unsigned long mq_bytes;	/* How many bytes can be allocated to mqueue? */
 #endif
 	unsigned long locked_shm; /* How many pages of mlocked shm ? */
+	atomic_long_t pipe_bufs;  /* how many pages are allocated in pipe buffers */
 
 #ifdef CONFIG_KEYS
 	struct key *uid_keyring;	/* UID specific keyring */
@@ -1604,6 +1605,9 @@ struct task_struct {
 	unsigned long default_timer_slack_ns;
 
 	struct list_head	*scm_work_list;
+#ifdef CONFIG_KASAN
+	unsigned int kasan_depth;
+#endif
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 	/* Index of current stored address in ret_stack */
 	int curr_ret_stack;
@@ -1975,6 +1979,14 @@ void calc_load_exit_idle(void);
 static inline void calc_load_enter_idle(void) { }
 static inline void calc_load_exit_idle(void) { }
 #endif /* CONFIG_NO_HZ */
+
+static inline void set_wake_up_idle(bool enabled)
+{
+	if (enabled)
+		current->flags |= PF_WAKE_UP_IDLE;
+	else
+		current->flags &= ~PF_WAKE_UP_IDLE;
+}
 
 #ifndef CONFIG_CPUMASK_OFFSTACK
 static inline int set_cpus_allowed(struct task_struct *p, cpumask_t new_mask)

@@ -866,7 +866,13 @@ EXPORT_SYMBOL(mod_timer);
  *
  * mod_timer_pinned() is a way to update the expire field of an
  * active timer (if the timer is inactive it will be activated)
- * and not allow the timer to be migrated to a different CPU.
+ * and to ensure that the timer is scheduled on the current CPU.
+ *
+ * Note that this does not prevent the timer from being migrated
+ * when the current CPU goes offline.  If this is a problem for
+ * you, use CPU-hotplug notifiers to handle it correctly, for
+ * example, cancelling the timer when the corresponding CPU goes
+ * offline.
  *
  * mod_timer_pinned(timer, expires) is equivalent to:
  *
@@ -1647,11 +1653,11 @@ SYSCALL_DEFINE1(sysinfo, struct sysinfo __user *, info)
 	return 0;
 }
 
-static int __cpuinit init_timers_cpu(int cpu)
+static int init_timers_cpu(int cpu)
 {
 	int j;
 	struct tvec_base *base;
-	static char __cpuinitdata tvec_base_done[NR_CPUS];
+	static char tvec_base_done[NR_CPUS];
 
 	if (!tvec_base_done[cpu]) {
 		static char boot_done;
@@ -1720,7 +1726,7 @@ static void migrate_timer_list(struct tvec_base *new_base, struct list_head *hea
 	}
 }
 
-static void __cpuinit migrate_timers(int cpu)
+static void migrate_timers(int cpu)
 {
 	struct tvec_base *old_base;
 	struct tvec_base *new_base;
@@ -1753,7 +1759,7 @@ static void __cpuinit migrate_timers(int cpu)
 }
 #endif /* CONFIG_HOTPLUG_CPU */
 
-static int __cpuinit timer_cpu_notify(struct notifier_block *self,
+static int timer_cpu_notify(struct notifier_block *self,
 				unsigned long action, void *hcpu)
 {
 	long cpu = (long)hcpu;
@@ -1778,7 +1784,7 @@ static int __cpuinit timer_cpu_notify(struct notifier_block *self,
 	return NOTIFY_OK;
 }
 
-static struct notifier_block __cpuinitdata timers_nb = {
+static struct notifier_block timers_nb = {
 	.notifier_call	= timer_cpu_notify,
 };
 

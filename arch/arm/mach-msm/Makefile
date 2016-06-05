@@ -391,7 +391,7 @@ obj-$(CONFIG_ARCH_APQ8084) += gpiomux-v2.o gpiomux.o
 obj-$(CONFIG_ARCH_FSM9900) += gpiomux-v2.o gpiomux.o
 
 obj-$(CONFIG_MSM_SLEEP_STATS_DEVICE) += idle_stats_device.o
-obj-$(CONFIG_MSM_DCVS) += msm_dcvs_scm.o msm_dcvs.o msm_mpdecision.o
+obj-$(CONFIG_MSM_DCVS) += msm_dcvs_scm.o msm_dcvs.o 
 obj-$(CONFIG_MSM_HOTPLUG) += msm_hotplug.o
 obj-$(CONFIG_MSM_RUN_QUEUE_STATS) += msm_rq_stats.o
 obj-$(CONFIG_MSM_SHOW_RESUME_IRQ) += msm_show_resume_irq.o
@@ -401,7 +401,11 @@ obj-$(CONFIG_MSM_RPC_VIBRATOR) += msm_vibrator.o
 obj-$(CONFIG_MSM_NATIVE_RESTART) += restart.o
 obj-$(CONFIG_MSM_NATIVE_RESTART) += htc_restart_handler.o
 obj-$(CONFIG_MSM_MODEM_RESTART) += restart_7k.o
-
+ifdef CONFIG_MSM_MPDEC
+obj-y += msm_mpdecision.o
+else
+obj-$(CONFIG_MSM_DCVS) += msm_mpdecision_qcom.o
+endif
 obj-$(CONFIG_MSM_PROC_COMM_REGULATOR) += proccomm-regulator.o
 ifdef CONFIG_MSM_PROC_COMM_REGULATOR
 obj-$(CONFIG_MACH_MSM7X27_SURF) += board-msm7627-regulator.o
@@ -472,7 +476,12 @@ obj-$(CONFIG_ARCH_RANDOM) += early_random.o
 obj-$(CONFIG_PERFMAP) += perfmap.o
 obj-$(CONFIG_HTC_RPM_CMD) += rpm_htc_cmd.o
 obj-$(CONFIG_HTC_MONITOR) += htc_monitor.o
+obj-$(CONFIG_MSM_LIMITER) += msm_limiter.o
+
 obj-$(CONFIG_HAS_MACH_MEMUTILS) += memutils/
 
 obj-$(CONFIG_LCD_KCAL) += msm_kcal_ctrl.o
-obj-$(CONFIG_MSM_SLEEPER) += msm-sleeper.o
+
+KBUILD_CFLAGS	+=-Wno-unused-const-variable
+KBUILD_CFLAGS	+=-Wno-misleading-indentation
+KBUILD_CFLAGS	+=-Wno-strict-aliasing

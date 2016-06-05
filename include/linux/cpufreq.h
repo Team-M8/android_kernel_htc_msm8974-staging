@@ -292,6 +292,15 @@ __ATTR(_name, 0644, show_##_name, store_##_name)
 int cpufreq_get_policy(struct cpufreq_policy *policy, unsigned int cpu);
 int cpufreq_update_policy(unsigned int cpu);
 
+#ifdef CONFIG_MSM_LIMITER
+int cpufreq_set_gov(char *target_gov, unsigned int cpu);
+char *cpufreq_get_gov(unsigned int cpu);
+int cpufreq_set_freq(unsigned int max_freq, unsigned int min_freq,
+			unsigned int cpu);
+int cpufreq_get_max(unsigned int cpu);
+int cpufreq_get_min(unsigned int cpu);
+#endif
+
 #ifdef CONFIG_CPU_FREQ
 unsigned int cpufreq_get(unsigned int cpu);
 #else
@@ -354,6 +363,9 @@ extern struct cpufreq_governor cpufreq_gov_interactive;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SMARTMAX)
 extern struct cpufreq_governor cpufreq_gov_smartmax;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_smartmax)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_SAVAGEDZEN)
+extern struct cpufreq_governor cpufreq_gov_SavagedZen;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_SavagedZen)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_BADASS)
 extern struct cpufreq_governor cpufreq_gov_badass;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_badass)
@@ -372,6 +384,9 @@ extern struct cpufreq_governor cpufreq_gov_yankdemand;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_INTELLIMM)
 extern struct cpufreq_governor cpufreq_gov_intellimm;
 #define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_intellimm)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_ARTERACTIVE)
+extern struct cpufreq_governor cpufreq_gov_arteractive;
+#define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_arteractive)
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_ABYSSPLUG)
 extern struct cpufreq_governor cpufreq_gov_abyssplug;
 #define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_abyssplug)
@@ -396,6 +411,9 @@ extern struct cpufreq_governor cpufreq_gov_darkness;
 #elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_ALUCARD)
 extern struct cpufreq_governor cpufreq_gov_alucard;
 #define CPUFREQ_DEFAULT_GOVERNOR	(&cpufreq_gov_alucard)
+#elif defined(CONFIG_CPU_FREQ_DEFAULT_GOV_IMPULSE)
+extern struct cpufreq_governor cpufreq_gov_impulse;
+#define CPUFREQ_DEFAULT_GOVERNOR        (&cpufreq_gov_intellidemand)
 #endif
 
 #define CPUFREQ_ENTRY_INVALID ~0

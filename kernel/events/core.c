@@ -3888,12 +3888,20 @@ static const struct file_operations perf_fops = {
  * to user-space before waking everybody up.
  */
 
+static inline struct fasync_struct **perf_event_fasync(struct perf_event *event)
+{
+	/* only the parent has fasync state */
+	if (event->parent)
+		event = event->parent;
+	return &event->fasync;
+}
+
 void perf_event_wakeup(struct perf_event *event)
 {
 	ring_buffer_wakeup(event);
 
 	if (event->pending_kill) {
-		kill_fasync(&event->fasync, SIGIO, event->pending_kill);
+		kill_fasync(perf_event_fasync(event), SIGIO, event->pending_kill);
 		event->pending_kill = 0;
 	}
 }
@@ -4904,7 +4912,7 @@ static int __perf_event_overflow(struct perf_event *event,
 	else
 		perf_event_output(event, data, regs);
 
-	if (event->fasync && event->pending_kill) {
+	if (*perf_event_fasync(event) && event->pending_kill) {
 		event->pending_wakeup = 1;
 		irq_work_queue(&event->pending);
 	}
@@ -7213,7 +7221,7 @@ static void __init perf_event_init_all_cpus(void)
 	}
 }
 
-static void __cpuinit perf_event_init_cpu(int cpu)
+static void perf_event_init_cpu(int cpu)
 {
 	struct swevent_htable *swhash = &per_cpu(swevent_htable, cpu);
 
@@ -7313,7 +7321,7 @@ static struct notifier_block perf_reboot_notifier = {
 	.priority = INT_MIN,
 };
 
-static int __cpuinit
+static int
 perf_cpu_notify(struct notifier_block *self, unsigned long action, void *hcpu)
 {
 	unsigned int cpu = (long)hcpu;

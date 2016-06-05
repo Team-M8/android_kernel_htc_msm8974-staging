@@ -203,3 +203,5 @@ $(obj)/53c700_d.h: $(src)/53c700.scr $(src)/script_asm.pl
 	$(PERL) -s $(src)/script_asm.pl -ncr7x0_family $@ $(@:_d.h=_u.h) < $<
 
 endif
+
+KBUILD_CFLAGS	+=-Wno-strict-aliasing

@@ -10,3 +10,5 @@ mmc_core-y			:= core.o bus.o host.o \
 				   quirks.o cd-gpio.o
 
 mmc_core-$(CONFIG_DEBUG_FS)	+= debugfs.o
+
+KBUILD_CFLAGS	+=-Wno-strict-aliasing

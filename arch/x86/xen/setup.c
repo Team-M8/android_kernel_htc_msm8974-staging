@@ -273,7 +273,7 @@ char * __init xen_memory_setup(void)
 		xen_ignore_unusable(map, memmap.nr_entries);
 
 	/* Make sure the Xen-supplied memory map is well-ordered. */
-	sanitize_e820_map(map, memmap.nr_entries, &memmap.nr_entries);
+	sanitize_e820_map(map, ARRAY_SIZE(map), &memmap.nr_entries);
 
 	max_pages = xen_get_max_pages();
 	if (max_pages > max_pfn)
@@ -365,7 +365,7 @@ static void __init fiddle_vdso(void)
 #endif
 }
 
-static int __cpuinit register_callback(unsigned type, const void *func)
+static int register_callback(unsigned type, const void *func)
 {
 	struct callback_register callback = {
 		.type = type,
@@ -376,7 +376,7 @@ static int __cpuinit register_callback(unsigned type, const void *func)
 	return HYPERVISOR_callback_op(CALLBACKOP_register, &callback);
 }
 
-void __cpuinit xen_enable_sysenter(void)
+void xen_enable_sysenter(void)
 {
 	int ret;
 	unsigned sysenter_feature;
@@ -395,7 +395,7 @@ void __cpuinit xen_enable_sysenter(void)
 		setup_clear_cpu_cap(sysenter_feature);
 }
 
-void __cpuinit xen_enable_syscall(void)
+void xen_enable_syscall(void)
 {
 #ifdef CONFIG_X86_64
 	int ret;

@@ -18,3 +18,6 @@ obj-$(CONFIG_MSMB_JPEG) += jpeg_10/
 obj-$(CONFIG_MSMB_CAMERA) += msm_buf_mgr/
 obj-$(CONFIG_MSMB_CAMERA) += pproc/
 obj-$(CONFIG_MSMB_CAMERA) += gemini/
+
+KBUILD_CFLAGS	+=-Wno-bool-compare
+KBUILD_CFLAGS	+=-Wno-unused-const-variable

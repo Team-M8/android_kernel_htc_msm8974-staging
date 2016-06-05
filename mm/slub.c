@@ -22,8 +22,6 @@
 #include <linux/prefetch.h>
 
 #include <trace/events/kmem.h>
-#include <htc_debug/stability/htc_report_meminfo.h>
-
 
 
 #define SLAB_DEBUG_FLAGS (SLAB_RED_ZONE | SLAB_POISON | SLAB_STORE_USER | \
@@ -1907,11 +1905,6 @@ EXPORT_SYMBOL(kmem_cache_alloc_trace);
 void *kmalloc_order_trace(size_t size, gfp_t flags, unsigned int order)
 {
 	void *ret = kmalloc_order(size, flags, order);
-
-	if (ret) {
-		struct page *page = virt_to_page(ret);
-		kmalloc_count(page, 1);
-	}
 	trace_kmalloc(_RET_IP_, ret, size, PAGE_SIZE << order, flags);
 	return ret;
 }
@@ -3166,7 +3159,7 @@ err:
 EXPORT_SYMBOL(kmem_cache_create);
 
 #ifdef CONFIG_SMP
-static int __cpuinit slab_cpuup_callback(struct notifier_block *nfb,
+static int slab_cpuup_callback(struct notifier_block *nfb,
 		unsigned long action, void *hcpu)
 {
 	long cpu = (long)hcpu;
@@ -3192,7 +3185,7 @@ static int __cpuinit slab_cpuup_callback(struct notifier_block *nfb,
 	return NOTIFY_OK;
 }
 
-static struct notifier_block __cpuinitdata slab_notifier = {
+static struct notifier_block slab_notifier = {
 	.notifier_call = slab_cpuup_callback
 };
 

@@ -289,7 +289,7 @@ static void check_for_release(struct cgroup *cgrp);
 
 /*
  * A queue for waiters to do rmdir() cgroup. A tasks will sleep when
- * cgroup->count == 0 && list_empty(&cgroup->children) && subsys has some
+ * list_empty(&cgroup->children) && subsys has some
  * reference to css->refcnt. In general, this refcnt is expected to goes down
  * to zero, soon.
  *
@@ -572,10 +572,12 @@ static void free_cg_links(struct list_head *tmp)
 	struct cg_cgroup_link *link;
 	struct cg_cgroup_link *saved_link;
 
+	write_lock(&css_set_lock);
 	list_for_each_entry_safe(link, saved_link, tmp, cgrp_link_list) {
 		list_del(&link->cgrp_link_list);
 		kfree(link);
 	}
+	write_unlock(&css_set_lock);
 }
 
 /*
@@ -588,14 +590,17 @@ static int allocate_cg_links(int count, struct list_head *tmp)
 	struct cg_cgroup_link *link;
 	int i;
 	INIT_LIST_HEAD(tmp);
+	write_lock(&css_set_lock);
 	for (i = 0; i < count; i++) {
 		link = kmalloc(sizeof(*link), GFP_KERNEL);
 		if (!link) {
+			write_unlock(&css_set_lock);
 			free_cg_links(tmp);
 			return -ENOMEM;
 		}
 		list_add(&link->cgrp_link_list, tmp);
 	}
+	write_unlock(&css_set_lock);
 	return 0;
 }
 
@@ -1066,15 +1071,16 @@ static int cgroup_show_options(struct seq_file *seq, struct dentry *dentry)
 
 	mutex_lock(&cgroup_root_mutex);
 	for_each_subsys(root, ss)
-		seq_printf(seq, ",%s", ss->name);
+		seq_show_option(seq, ss->name, NULL);
 	if (test_bit(ROOT_NOPREFIX, &root->flags))
 		seq_puts(seq, ",noprefix");
 	if (strlen(root->release_agent_path))
-		seq_printf(seq, ",release_agent=%s", root->release_agent_path);
+		seq_show_option(seq, "release_agent",
+				root->release_agent_path);
 	if (clone_children(&root->top_cgroup))
 		seq_puts(seq, ",clone_children");
 	if (strlen(root->name))
-		seq_printf(seq, ",name=%s", root->name);
+		seq_show_option(seq, "name", root->name);
 	mutex_unlock(&cgroup_root_mutex);
 	return 0;
 }
@@ -3925,6 +3931,10 @@ static int cgroup_clear_css_refs(struct cgroup *cgrp)
 	struct cgroup_subsys *ss;
 	unsigned long flags;
 	bool failed = false;
+
+	if (atomic_read(&cgrp->count) != 0)
+		return false;
+
 	local_irq_save(flags);
 	for_each_subsys(cgrp->root, ss) {
 		struct cgroup_subsys_state *css = cgrp->subsys[ss->subsys_id];

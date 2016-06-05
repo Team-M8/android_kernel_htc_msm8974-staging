@@ -154,8 +154,6 @@ source "drivers/coresight/Kconfig"
 
 source "drivers/bif/Kconfig"
 
-source "drivers/htc_debug/stability/Kconfig"
-
 source "drivers/sensors/Kconfig"
 
 endmenu

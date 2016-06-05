@@ -539,6 +539,10 @@ static inline bool got_nohz_idle_kick(void)
 	if (idle_cpu(cpu) && !need_resched())
 		return true;
 
+	/*
+	 * We can't run Idle Load Balance on this CPU for this time so we
+	 * cancel it and clear NOHZ_BALANCE_KICK
+	 */
 	clear_bit(NOHZ_BALANCE_KICK, nohz_flags(cpu));
 	return false;
 }
@@ -1218,6 +1222,9 @@ void scheduler_ipi(void)
 	irq_enter();
 	sched_ttwu_pending();
 
+	/*
+	 * Check if someone kicked us for doing the nohz idle load balance.
+	 */
 	if (unlikely(got_nohz_idle_kick())) {
 		this_rq()->idle_balance = 1;
 		raise_softirq_irqoff(SCHED_SOFTIRQ);
@@ -1311,8 +1318,8 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
 
 	cpu = select_task_rq(p, SD_BALANCE_WAKE, wake_flags);
 
-       
-       src_cpu = task_cpu(p);
+	/* Refresh src_cpu as it could have changed since we last read it */
+	src_cpu = task_cpu(p);
 	if (src_cpu != cpu) {
 		wake_flags |= WF_MIGRATED;
 		set_task_cpu(p, cpu);
@@ -1539,6 +1546,17 @@ static void finish_task_switch(struct rq *rq, struct task_struct *prev)
 
 	rq->prev_mm = NULL;
 
+	/*
+	 * A task struct has one reference for the use as "current".
+	 * If a task dies, then it sets TASK_DEAD in tsk->state and calls
+	 * schedule one last time. The schedule call will never return, and
+	 * the scheduled task must drop that reference.
+	 *
+	 * We must observe prev->state before clearing prev->on_cpu (in
+	 * finish_lock_switch), otherwise a concurrent wakeup can get prev
+	 * running on another CPU and we could rave with its RUNNING -> DEAD
+	 * transition, resulting in a double drop.
+	 */
 	prev_state = prev->state;
 	finish_arch_switch(prev);
 #ifdef __ARCH_WANT_INTERRUPTS_ON_CTXSW
@@ -4002,12 +4020,12 @@ void show_thread_group_state_filter(const char *tg_comm, unsigned long state_fil
 		debug_show_all_locks();
 }
 
-void __cpuinit init_idle_bootup_task(struct task_struct *idle)
+void init_idle_bootup_task(struct task_struct *idle)
 {
 	idle->sched_class = &idle_sched_class;
 }
 
-void __cpuinit init_idle(struct task_struct *idle, int cpu)
+void init_idle(struct task_struct *idle, int cpu)
 {
 	struct rq *rq = cpu_rq(cpu);
 	unsigned long flags;
@@ -4398,7 +4416,7 @@ static void set_rq_offline(struct rq *rq)
 	}
 }
 
-static int __cpuinit
+static int
 migration_call(struct notifier_block *nfb, unsigned long action, void *hcpu)
 {
 	int cpu = (long)hcpu;
@@ -4446,12 +4464,12 @@ migration_call(struct notifier_block *nfb, unsigned long action, void *hcpu)
 	return NOTIFY_OK;
 }
 
-static struct notifier_block __cpuinitdata migration_notifier = {
+static struct notifier_block migration_notifier = {
 	.notifier_call = migration_call,
 	.priority = CPU_PRI_MIGRATION,
 };
 
-static int __cpuinit sched_cpu_active(struct notifier_block *nfb,
+static int sched_cpu_active(struct notifier_block *nfb,
 				      unsigned long action, void *hcpu)
 {
 	switch (action & ~CPU_TASKS_FROZEN) {
@@ -4463,7 +4481,7 @@ static int __cpuinit sched_cpu_active(struct notifier_block *nfb,
 	}
 }
 
-static int __cpuinit sched_cpu_inactive(struct notifier_block *nfb,
+static int sched_cpu_inactive(struct notifier_block *nfb,
 					unsigned long action, void *hcpu)
 {
 	switch (action & ~CPU_TASKS_FROZEN) {
@@ -4956,7 +4974,7 @@ static const struct cpumask *cpu_cpu_mask(int cpu)
 	return cpumask_of_node(cpu_to_node(cpu));
 }
 
-int sched_smt_power_savings = 0, sched_mc_power_savings = 2;
+int sched_smt_power_savings = 0, sched_mc_power_savings = 0;
 
 struct sd_data {
 	struct sched_domain **__percpu sd;
