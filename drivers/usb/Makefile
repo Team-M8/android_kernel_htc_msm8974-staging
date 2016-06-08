@@ -60,4 +60,3 @@ obj-$(CONFIG_USB_GADGET)	+= gadget/
 
 obj-$(CONFIG_USB_COMMON)	+= usb-common.o
 
-KBUILD_CFLAGS	+=-Wno-strict-aliasing

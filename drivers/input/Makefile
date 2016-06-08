@@ -27,4 +27,3 @@ obj-$(CONFIG_INPUT_APMPOWER)	+= apm-power.o
 obj-$(CONFIG_INPUT_OF_MATRIX_KEYMAP) += of_keymap.o
 obj-$(CONFIG_INPUT_KEYRESET)	+= keyreset.o
 
-KBUILD_CFLAGS	+=-Wno-strict-aliasing

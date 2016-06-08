@@ -70,4 +70,3 @@ obj-$(CONFIG_DIAG_CHAR)		+= diag/
 obj-$(CONFIG_MSM_ADSPRPC)       += adsprpc.o
 obj-$(CONFIG_MSM_RDBG)       += rdbg.o
 
-KBUILD_CFLAGS	+=-Wno-strict-aliasing
