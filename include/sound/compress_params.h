@@ -327,8 +327,6 @@ struct snd_codec_desc {
 	__u32 reserved[15];
 };
 
-<<<<<<< HEAD
-=======
 /** struct snd_codec
  * @id: Identifies the supported audio encoder/decoder.
  *		See SND_AUDIOCODEC macros.
@@ -353,7 +351,6 @@ struct snd_codec_desc {
  * @options: encoder-specific settings
  * @reserved: reserved for future use
  */
->>>>>>> cadac7e... ALSA: compress: update comment for sample rate in snd_codec
 
 struct snd_codec {
 	__u32 id;
