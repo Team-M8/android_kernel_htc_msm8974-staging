@@ -132,4 +132,3 @@ obj-$(CONFIG_PSTORE)		+= pstore/
 obj-$(CONFIG_YAFFS_FS)		+= yaffs2/
 obj-$(CONFIG_HTC_FD_MONITOR)    += fd_monitor.o
 
-KBUILD_CFLAGS	+=-Wno-strict-aliasing

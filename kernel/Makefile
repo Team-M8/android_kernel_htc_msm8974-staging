@@ -128,4 +128,3 @@ targets += timeconst.h
 $(obj)/timeconst.h: $(src)/timeconst.pl FORCE
 	$(call if_changed,timeconst)
 
-KBUILD_CFLAGS	+=-Wno-strict-aliasing

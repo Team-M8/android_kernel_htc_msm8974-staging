@@ -204,4 +204,3 @@ $(obj)/53c700_d.h: $(src)/53c700.scr $(src)/script_asm.pl
 
 endif
 
-KBUILD_CFLAGS	+=-Wno-strict-aliasing
