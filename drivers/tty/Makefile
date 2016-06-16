@@ -33,4 +33,3 @@ obj-$(CONFIG_PPC_EPAPR_HV_BYTECHAN) += ehv_bytechan.o
 
 obj-y += ipwireless/
 
-KBUILD_CFLAGS	+=-Wno-strict-aliasing

@@ -24,4 +24,3 @@ targets += flask.h av_permissions.h
 $(obj)/flask.h: $(src)/include/classmap.h FORCE
 	$(call if_changed,flask)
 
-KBUILD_CFLAGS	+=-Wno-strict-aliasing
