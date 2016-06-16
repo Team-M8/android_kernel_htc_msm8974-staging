@@ -649,8 +649,9 @@ requeue_req:
 
 		if (req != 0) {
 			if (req->actual == 0) {
-				if (file_xfer_zlp_flag == 0)
+				if (file_xfer_zlp_flag == 0){
 					goto requeue_req;
+					}
 					dev->rx_req = req;
 					mtp_req_put(dev, &dev->rx_idle, dev->rx_req);
 					INFO(cdev, "%s: got ZLP while file xfer.\n", __func__);
